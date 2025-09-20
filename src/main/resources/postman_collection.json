@@ -1,0 +1,212 @@
+{
+  "info": {
+    "_postman_id": "f5aa7b62-4f8d-4d01-9bc2-7a0ce0b2c3f2",
+    "name": "FlightTracker API Collection",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "description": "Colección Postman para probar el backend de FlightTracker. Incluye variables, scripts y ejemplos de cuerpo para todos los endpoints actuales."
+  },
+  "variable": [
+    { "key": "baseUrl", "value": "http://localhost:8080" },
+    { "key": "username", "value": "admin" },
+    { "key": "password", "value": "admin123" },
+    { "key": "token", "value": "" },
+    { "key": "academyId", "value": "1" },
+    { "key": "moduleCode", "value": "HOURS" },
+    { "key": "pilotId", "value": "11" },
+    { "key": "instructorId", "value": "12" },
+    { "key": "aircraftId", "value": "100" },
+    { "key": "receiptNumber", "value": "R-1001" },
+    { "key": "hoursPurchase", "value": "5.0" },
+    { "key": "hoursUsage", "value": "1.5" },
+    { "key": "purchaseDate", "value": "" },
+    { "key": "flightDate", "value": "" },
+    { "key": "logbookNumber", "value": "L-0001" }
+  ],
+  "event": [
+    {
+      "listen": "prerequest",
+      "script": {
+        "type": "text/javascript",
+        "exec": [
+          "// Establecer fecha 'YYYY-MM-DD' si no viene seteada",
+          "const today = new Date().toISOString().slice(0,10);",
+          "if (!pm.collectionVariables.get('purchaseDate')) { pm.collectionVariables.set('purchaseDate', today); }",
+          "if (!pm.collectionVariables.get('flightDate')) { pm.collectionVariables.set('flightDate', today); }"
+        ]
+      }
+    }
+  ],
+  "item": [
+    {
+      "name": "Auth",
+      "item": [
+        {
+          "name": "Login",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "name": "Content-Type", "value": "application/json", "type": "text" }
+            ],
+            "url": { "raw": "{{baseUrl}}/api/auth/login", "host": [ "{{baseUrl}}" ], "path": [ "api", "auth", "login" ] },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"username\": \"{{username}}\",\n  \"password\": \"{{password}}\"\n}"
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 200 OK', function () { pm.response.to.have.status(200); });",
+                  "const json = pm.response.json();",
+                  "pm.test('Token presente', function(){ pm.expect(json.token).to.be.a('string').and.not.empty; });",
+                  "pm.collectionVariables.set('token', json.token);"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Modules",
+      "item": [
+        {
+          "name": "Toggle Module (ADMIN)",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "url": { "raw": "{{baseUrl}}/api/modules/toggle", "host": ["{{baseUrl}}"], "path": ["api","modules","toggle"] },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"academyId\": {{academyId}},\n  \"moduleCode\": \"{{moduleCode}}\",\n  \"active\": true\n}"
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Status Module (ADMIN)",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/modules/status?academyId={{academyId}}&moduleCode={{moduleCode}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api","modules","status"],
+              "query": [
+                { "key": "academyId", "value": "{{academyId}}" },
+                { "key": "moduleCode", "value": "{{moduleCode}}" }
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Hours",
+      "item": [
+        {
+          "name": "Purchase Hours (HOURS_CREATE)",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "url": { "raw": "{{baseUrl}}/api/hours/purchase", "host": ["{{baseUrl}}"], "path": ["api","hours","purchase"] },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"academyId\": {{academyId}},\n  \"pilotId\": {{pilotId}},\n  \"aircraftId\": {{aircraftId}},\n  \"receiptNumber\": \"{{receiptNumber}}\",\n  \"hours\": {{hoursPurchase}},\n  \"purchaseDate\": \"{{purchaseDate}}\"\n}"
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 200 OK', function () { pm.response.to.have.status(200); });",
+                  "const json = pm.response.json();",
+                  "pm.test('purchaseId existe', function(){ pm.expect(json.purchaseId).to.be.a('number'); });",
+                  "pm.test('balanceHours actualizado', function(){ pm.expect(json.balanceHours).to.be.a('number'); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Register Usage (HOURS_EDIT)",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "url": { "raw": "{{baseUrl}}/api/hours/usage", "host": ["{{baseUrl}}"], "path": ["api","hours","usage"] },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"academyId\": {{academyId}},\n  \"pilotId\": {{pilotId}},\n  \"aircraftId\": {{aircraftId}},\n  \"instructorId\": {{instructorId}},\n  \"hours\": {{hoursUsage}},\n  \"flightDate\": \"{{flightDate}}\",\n  \"logbookNumber\": \"{{logbookNumber}}\"\n}"
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 200 OK', function () { pm.response.to.have.status(200); });",
+                  "const json = pm.response.json();",
+                  "pm.test('usageId existe', function(){ pm.expect(json.usageId).to.be.a('number'); });",
+                  "pm.test('balanceHours actualizado', function(){ pm.expect(json.balanceHours).to.be.a('number'); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Get Balance (HOURS_VIEW)",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/hours/balance?pilotId={{pilotId}}&aircraftId={{aircraftId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api","hours","balance"],
+              "query": [
+                { "key": "pilotId", "value": "{{pilotId}}" },
+                { "key": "aircraftId", "value": "{{aircraftId}}" }
+              ]
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 200 OK', function () { pm.response.to.have.status(200); });",
+                  "const json = pm.response.json();",
+                  "pm.test('Campos de balance', function(){ pm.expect(json.pilotId).to.be.a('number'); pm.expect(json.aircraftId).to.be.a('number'); pm.expect(json.totalPurchased).to.be.a('number'); pm.expect(json.totalUsed).to.be.a('number'); pm.expect(json.balanceHours).to.be.a('number'); });"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

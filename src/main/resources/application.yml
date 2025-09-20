@@ -1,0 +1,23 @@
+server:
+  port: ${PORT:8080}
+
+spring:
+  datasource:
+    url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://ep-empty-mouse-ad5n6ljn-pooler.c-2.us-east-1.aws.neon.tech/neondb?sslmode=require}
+    username: ${DB_USERNAME:${POSTGRES_USER:neondb_owner}}
+    password: ${DB_PASSWORD:${POSTGRES_PASSWORD:npg_HQx8n7DzhNpf}}
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    open-in-view: false
+    hibernate:
+      ddl-auto: none
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+  jackson:
+    serialization:
+      WRITE_DATES_AS_TIMESTAMPS: false
+
+jwt:
+  secret: ${JWT_SECRET:8f81936751f9b1cd10e89c128582d14045955ad68418ea1f6a2152e61a73d7fd}
+  expiration: ${JWT_EXPIRATION_SECONDS:86400}
