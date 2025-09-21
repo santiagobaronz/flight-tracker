@@ -1,9 +1,9 @@
-package com.espectrosoft.flightTracker.application.usecase;
+package com.espectrosoft.flightTracker.application.service;
 
 import com.espectrosoft.flightTracker.application.dto.hours.PurchaseHoursRequestDto;
 import com.espectrosoft.flightTracker.application.dto.hours.RegisterUsageRequestDto;
 import com.espectrosoft.flightTracker.application.exception.BusinessException;
-import com.espectrosoft.flightTracker.application.usecase.impl.HoursUseCaseImpl;
+import com.espectrosoft.flightTracker.application.service.impl.HoursServiceImpl;
 import com.espectrosoft.flightTracker.domain.model.*;
 import com.espectrosoft.flightTracker.domain.model.enums.ModuleCode;
 import com.espectrosoft.flightTracker.domain.repository.*;
@@ -29,7 +29,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-class HoursUseCaseImplTest {
+class HoursServiceImplTest {
 
     @Mock
     private AcademyRepository academyRepository;
@@ -47,7 +47,8 @@ class HoursUseCaseImplTest {
     private AcademyModuleRepository academyModuleRepository;
 
     @InjectMocks
-    private HoursUseCaseImpl useCase;
+    private HoursServiceImpl
+        useCase;
 
     @BeforeEach
     void setUp() {

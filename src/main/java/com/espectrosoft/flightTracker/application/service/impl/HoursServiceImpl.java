@@ -1,4 +1,4 @@
-package com.espectrosoft.flightTracker.application.usecase.impl;
+package com.espectrosoft.flightTracker.application.service.impl;
 
 import com.espectrosoft.flightTracker.application.dto.hours.PurchaseHoursRequestDto;
 import com.espectrosoft.flightTracker.application.dto.hours.PurchaseHoursResponseDto;
@@ -8,11 +8,14 @@ import com.espectrosoft.flightTracker.application.dto.hours.UserAircraftBalanceD
 import com.espectrosoft.flightTracker.application.exception.BusinessException;
 import com.espectrosoft.flightTracker.application.exception.NotFoundException;
 import com.espectrosoft.flightTracker.application.exception.ModuleDisabledException;
-import com.espectrosoft.flightTracker.application.usecase.HoursUseCase;
+import com.espectrosoft.flightTracker.application.service.HoursService;
 import com.espectrosoft.flightTracker.application.util.SecurityUtil;
 import com.espectrosoft.flightTracker.domain.model.*;
 import com.espectrosoft.flightTracker.domain.model.enums.ModuleCode;
 import com.espectrosoft.flightTracker.domain.repository.*;
+import lombok.AccessLevel;
+import lombok.RequiredArgsConstructor;
+import lombok.experimental.FieldDefaults;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -21,31 +24,17 @@ import java.util.Objects;
 
 @Service
 @Transactional
-public class HoursUseCaseImpl implements HoursUseCase {
+@RequiredArgsConstructor
+@FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
+public class HoursServiceImpl implements HoursService {
 
-    private final AcademyRepository academyRepository;
-    private final UserRepository userRepository;
-    private final AircraftRepository aircraftRepository;
-    private final HourPurchaseRepository hourPurchaseRepository;
-    private final HourUsageRepository hourUsageRepository;
-    private final UserAircraftBalanceRepository balanceRepository;
-    private final AcademyModuleRepository academyModuleRepository;
-
-    public HoursUseCaseImpl(AcademyRepository academyRepository,
-                            UserRepository userRepository,
-                            AircraftRepository aircraftRepository,
-                            HourPurchaseRepository hourPurchaseRepository,
-                            HourUsageRepository hourUsageRepository,
-                            UserAircraftBalanceRepository balanceRepository,
-                            AcademyModuleRepository academyModuleRepository) {
-        this.academyRepository = academyRepository;
-        this.userRepository = userRepository;
-        this.aircraftRepository = aircraftRepository;
-        this.hourPurchaseRepository = hourPurchaseRepository;
-        this.hourUsageRepository = hourUsageRepository;
-        this.balanceRepository = balanceRepository;
-        this.academyModuleRepository = academyModuleRepository;
-    }
+    AcademyRepository academyRepository;
+    UserRepository userRepository;
+    AircraftRepository aircraftRepository;
+    HourPurchaseRepository hourPurchaseRepository;
+    HourUsageRepository hourUsageRepository;
+    UserAircraftBalanceRepository balanceRepository;
+    AcademyModuleRepository academyModuleRepository;
 
     @Override
     public PurchaseHoursResponseDto purchaseHours(PurchaseHoursRequestDto request) {

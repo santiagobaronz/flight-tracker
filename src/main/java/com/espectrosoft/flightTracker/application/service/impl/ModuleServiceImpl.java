@@ -1,28 +1,28 @@
-package com.espectrosoft.flightTracker.application.usecase.impl;
+package com.espectrosoft.flightTracker.application.service.impl;
 
 import com.espectrosoft.flightTracker.application.dto.module.ModuleStatusDto;
 import com.espectrosoft.flightTracker.application.dto.module.ModuleToggleRequestDto;
 import com.espectrosoft.flightTracker.application.exception.NotFoundException;
-import com.espectrosoft.flightTracker.application.usecase.ModuleUseCase;
+import com.espectrosoft.flightTracker.application.service.ModuleService;
 import com.espectrosoft.flightTracker.domain.model.Academy;
 import com.espectrosoft.flightTracker.domain.model.AcademyModule;
 import com.espectrosoft.flightTracker.domain.model.enums.ModuleCode;
 import com.espectrosoft.flightTracker.domain.repository.AcademyModuleRepository;
 import com.espectrosoft.flightTracker.domain.repository.AcademyRepository;
+import lombok.AccessLevel;
+import lombok.RequiredArgsConstructor;
+import lombok.experimental.FieldDefaults;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @Transactional
-public class ModuleUseCaseImpl implements ModuleUseCase {
+@RequiredArgsConstructor
+@FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
+public class ModuleServiceImpl implements ModuleService {
 
-    private final AcademyRepository academyRepository;
-    private final AcademyModuleRepository academyModuleRepository;
-
-    public ModuleUseCaseImpl(AcademyRepository academyRepository, AcademyModuleRepository academyModuleRepository) {
-        this.academyRepository = academyRepository;
-        this.academyModuleRepository = academyModuleRepository;
-    }
+    AcademyRepository academyRepository;
+    AcademyModuleRepository academyModuleRepository;
 
     @Override
     public ModuleStatusDto toggle(ModuleToggleRequestDto request) {

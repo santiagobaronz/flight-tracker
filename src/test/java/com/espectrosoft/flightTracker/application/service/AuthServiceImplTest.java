@@ -1,9 +1,9 @@
-package com.espectrosoft.flightTracker.application.usecase;
+package com.espectrosoft.flightTracker.application.service;
 
 import com.espectrosoft.flightTracker.application.dto.auth.LoginRequestDto;
 import com.espectrosoft.flightTracker.application.dto.auth.LoginResponseDto;
 import com.espectrosoft.flightTracker.application.security.JwtService;
-import com.espectrosoft.flightTracker.application.usecase.impl.AuthUseCaseImpl;
+import com.espectrosoft.flightTracker.application.service.impl.AuthServiceImpl;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -22,7 +22,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-class AuthUseCaseImplTest {
+class AuthServiceImplTest {
 
     @Mock
     private AuthenticationManager authenticationManager;
@@ -31,7 +31,8 @@ class AuthUseCaseImplTest {
     private JwtService jwtService;
 
     @InjectMocks
-    private AuthUseCaseImpl useCase;
+    private AuthServiceImpl
+        useCase;
 
     @Test
     void login_ok_returns_token() {

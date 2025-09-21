@@ -1,9 +1,12 @@
-package com.espectrosoft.flightTracker.application.usecase.impl;
+package com.espectrosoft.flightTracker.application.service.impl;
 
 import com.espectrosoft.flightTracker.application.dto.auth.LoginRequestDto;
 import com.espectrosoft.flightTracker.application.dto.auth.LoginResponseDto;
 import com.espectrosoft.flightTracker.application.security.JwtService;
-import com.espectrosoft.flightTracker.application.usecase.AuthUseCase;
+import com.espectrosoft.flightTracker.application.service.AuthService;
+import lombok.AccessLevel;
+import lombok.RequiredArgsConstructor;
+import lombok.experimental.FieldDefaults;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -11,15 +14,12 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
 @Service
-public class AuthUseCaseImpl implements AuthUseCase {
+@RequiredArgsConstructor
+@FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
+public class AuthServiceImpl implements AuthService {
 
-    private final AuthenticationManager authenticationManager;
-    private final JwtService jwtService;
-
-    public AuthUseCaseImpl(AuthenticationManager authenticationManager, JwtService jwtService) {
-        this.authenticationManager = authenticationManager;
-        this.jwtService = jwtService;
-    }
+    AuthenticationManager authenticationManager;
+    JwtService jwtService;
 
     @Override
     public LoginResponseDto login(LoginRequestDto request) {
