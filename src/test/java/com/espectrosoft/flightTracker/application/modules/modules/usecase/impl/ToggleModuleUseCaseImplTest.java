@@ -1,8 +1,7 @@
-package com.espectrosoft.flightTracker.application.service;
+package com.espectrosoft.flightTracker.application.modules.modules.usecase.impl;
 
 import com.espectrosoft.flightTracker.application.dto.module.ModuleStatusDto;
 import com.espectrosoft.flightTracker.application.dto.module.ModuleToggleRequestDto;
-import com.espectrosoft.flightTracker.application.service.impl.ModuleServiceImpl;
 import com.espectrosoft.flightTracker.domain.model.Academy;
 import com.espectrosoft.flightTracker.domain.model.AcademyModule;
 import com.espectrosoft.flightTracker.domain.model.enums.ModuleCode;
@@ -19,12 +18,11 @@ import java.util.Optional;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-class ModuleServiceImplTest {
+class ToggleModuleUseCaseImplTest {
 
     @Mock
     private AcademyRepository academyRepository;
@@ -32,11 +30,10 @@ class ModuleServiceImplTest {
     private AcademyModuleRepository academyModuleRepository;
 
     @InjectMocks
-    private ModuleServiceImpl
-        useCase;
+    private ToggleModuleUseCaseImpl useCase;
 
     @Test
-    void toggle_create_new_active() {
+    void toggle_creates_or_updates() {
         final Academy academy = Academy.builder().id(1L).name("A").build();
         final ModuleToggleRequestDto req = new ModuleToggleRequestDto();
         req.setAcademyId(1L);
@@ -50,29 +47,13 @@ class ModuleServiceImplTest {
             return AcademyModule.builder().id(10L).academy(am.getAcademy()).moduleCode(am.getModuleCode()).active(am.isActive()).build();
         });
 
-        final ModuleStatusDto resp = useCase.toggle(req);
+        final ModuleStatusDto resp = useCase.apply(req);
 
         assertEquals(1L, resp.getAcademyId());
         assertEquals(ModuleCode.HOURS, resp.getModuleCode());
         assertEquals(true, resp.isActive());
-        verify(academyRepository, times(1)).findById(eq(1L));
-        verify(academyModuleRepository, times(1)).findByAcademyAndModuleCode(eq(academy), eq(ModuleCode.HOURS));
-        verify(academyModuleRepository, times(1)).save(any(AcademyModule.class));
-    }
-
-    @Test
-    void status_not_configured_defaults_false() {
-        final Academy academy = Academy.builder().id(1L).name("A").build();
-
-        when(academyRepository.findById(eq(1L))).thenReturn(Optional.of(academy));
-        when(academyModuleRepository.findByAcademyAndModuleCode(eq(academy), eq(ModuleCode.HOURS))).thenReturn(Optional.empty());
-
-        final ModuleStatusDto resp = useCase.status(1L, ModuleCode.HOURS);
-
-        assertEquals(1L, resp.getAcademyId());
-        assertEquals(ModuleCode.HOURS, resp.getModuleCode());
-        assertEquals(false, resp.isActive());
-        verify(academyRepository, times(1)).findById(eq(1L));
-        verify(academyModuleRepository, times(1)).findByAcademyAndModuleCode(eq(academy), eq(ModuleCode.HOURS));
+        verify(academyRepository).findById(eq(1L));
+        verify(academyModuleRepository).findByAcademyAndModuleCode(eq(academy), eq(ModuleCode.HOURS));
+        verify(academyModuleRepository).save(any(AcademyModule.class));
     }
 }

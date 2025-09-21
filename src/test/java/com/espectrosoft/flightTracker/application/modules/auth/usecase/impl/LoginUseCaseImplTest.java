@@ -1,9 +1,8 @@
-package com.espectrosoft.flightTracker.application.service;
+package com.espectrosoft.flightTracker.application.modules.auth.usecase.impl;
 
 import com.espectrosoft.flightTracker.application.dto.auth.LoginRequestDto;
 import com.espectrosoft.flightTracker.application.dto.auth.LoginResponseDto;
 import com.espectrosoft.flightTracker.application.security.JwtService;
-import com.espectrosoft.flightTracker.application.service.impl.AuthServiceImpl;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -22,7 +21,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-class AuthServiceImplTest {
+class LoginUseCaseImplTest {
 
     @Mock
     private AuthenticationManager authenticationManager;
@@ -31,8 +30,7 @@ class AuthServiceImplTest {
     private JwtService jwtService;
 
     @InjectMocks
-    private AuthServiceImpl
-        useCase;
+    private LoginUseCaseImpl useCase;
 
     @Test
     void login_ok_returns_token() {
@@ -46,7 +44,7 @@ class AuthServiceImplTest {
         when(authenticationManager.authenticate(any(UsernamePasswordAuthenticationToken.class))).thenReturn(auth);
         when(jwtService.generateToken(eq(principal))).thenReturn("token123");
 
-        final LoginResponseDto resp = useCase.login(req);
+        final LoginResponseDto resp = useCase.apply(req);
 
         assertEquals("token123", resp.getToken());
         verify(authenticationManager, times(1)).authenticate(any(UsernamePasswordAuthenticationToken.class));
