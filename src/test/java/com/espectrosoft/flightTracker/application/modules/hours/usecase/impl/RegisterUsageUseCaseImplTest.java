@@ -5,6 +5,7 @@ import com.espectrosoft.flightTracker.application.dto.hours.RegisterUsageRespons
 import com.espectrosoft.flightTracker.application.exception.BusinessException;
 import com.espectrosoft.flightTracker.application.exception.NotFoundException;
 import com.espectrosoft.flightTracker.application.core.policy.AccessValidationUseCase;
+import com.espectrosoft.flightTracker.application.core.policy.validations.UserActivePolicy;
 import com.espectrosoft.flightTracker.domain.model.*;
 import com.espectrosoft.flightTracker.domain.model.enums.ModuleCode;
 import com.espectrosoft.flightTracker.domain.repository.*;
@@ -39,6 +40,8 @@ class RegisterUsageUseCaseImplTest {
     private UserAircraftBalanceRepository balanceRepository;
     @Mock
     private AccessValidationUseCase accessValidationUseCase;
+    @Mock
+    private UserActivePolicy userActivePolicy;
 
     private RegisterUsageUseCaseImpl useCase;
 
@@ -50,7 +53,8 @@ class RegisterUsageUseCaseImplTest {
                 aircraftRepository,
                 hourUsageRepository,
                 balanceRepository,
-                accessValidationUseCase
+                accessValidationUseCase,
+                userActivePolicy
         );
         final SecurityContext context = SecurityContextHolder.createEmptyContext();
         context.setAuthentication(new UsernamePasswordAuthenticationToken("admin", ""));
@@ -82,6 +86,7 @@ class RegisterUsageUseCaseImplTest {
         when(aircraftRepository.findById(100L)).thenReturn(Optional.of(aircraft));
         when(balanceRepository.findByPilotAndAircraft(pilot, aircraft)).thenReturn(Optional.of(balance));
         when(userRepository.findByUsername("admin")).thenReturn(Optional.of(creator));
+        doNothing().when(userActivePolicy).apply(creator);
         when(hourUsageRepository.save(any(HourUsage.class))).thenAnswer(inv -> {
             final HourUsage u = inv.getArgument(0, HourUsage.class);
             return HourUsage.builder()
@@ -111,6 +116,7 @@ class RegisterUsageUseCaseImplTest {
         verify(aircraftRepository).findById(100L);
         verify(balanceRepository).findByPilotAndAircraft(pilot, aircraft);
         verify(userRepository).findByUsername("admin");
+        verify(userActivePolicy).apply(creator);
         verify(hourUsageRepository).save(any(HourUsage.class));
         verify(balanceRepository).save(any(UserAircraftBalance.class));
     }

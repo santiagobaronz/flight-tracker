@@ -36,6 +36,8 @@ public class ToggleModuleUseCaseImpl implements ToggleModuleUseCase {
                         .build());
         am.setActive(Boolean.TRUE.equals(request.getActive()));
         final AcademyModule saved = academyModuleRepository.save(am);
-        return new ModuleStatusDto(academy.getId(), saved.getModuleCode(), saved.isActive());
+        final ModuleStatusDto dto = new ModuleStatusDto(academy.getId(), saved.getModuleCode(), saved.isActive());
+        dto.setAttributes(saved.getAttributes());
+        return dto;
     }
 }

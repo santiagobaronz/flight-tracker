@@ -19,6 +19,13 @@ spring:
     locations: classpath:db/migration
     baseline-on-migrate: true
     baseline-version: 1
+    default-schema: public
+    schemas: public
+
+logging:
+  level:
+    org.flywaydb: DEBUG
+    org.springframework.boot.autoconfigure.flyway: DEBUG
 
 jwt:
   secret: ${JWT_SECRET:8f81936751f9b1cd10e89c128582d14045955ad68418ea1f6a2152e61a73d7fd}

@@ -3,6 +3,8 @@ package com.espectrosoft.flightTracker.domain.model;
 import com.espectrosoft.flightTracker.domain.model.enums.ModuleCode;
 import jakarta.persistence.*;
 import lombok.*;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "academy_modules",
@@ -27,4 +29,19 @@ public class AcademyModule {
 
     @Column(name = "active", nullable = false)
     private boolean active;
+
+    @Column(name = "name", length = 120)
+    private String name;
+
+    @Column(name = "description", length = 500)
+    private String description;
+
+    @Column(name = "route", length = 255)
+    private String route;
+
+    @ElementCollection(fetch = FetchType.EAGER)
+    @CollectionTable(name = "academy_module_attributes", joinColumns = @JoinColumn(name = "academy_module_id"))
+    @Column(name = "attribute", length = 100)
+    @Builder.Default
+    private List<String> attributes = new ArrayList<>();
 }

@@ -5,6 +5,7 @@ import com.espectrosoft.flightTracker.application.dto.hours.RegisterUsageRespons
 import com.espectrosoft.flightTracker.application.exception.BusinessException;
 import com.espectrosoft.flightTracker.application.exception.NotFoundException;
 import com.espectrosoft.flightTracker.application.core.policy.AccessValidationUseCase;
+import com.espectrosoft.flightTracker.application.core.policy.validations.UserActivePolicy;
 import com.espectrosoft.flightTracker.application.modules.hours.usecase.RegisterUsageUseCase;
 import com.espectrosoft.flightTracker.application.util.SecurityUtil;
 import com.espectrosoft.flightTracker.domain.model.*;
@@ -28,6 +29,7 @@ public class RegisterUsageUseCaseImpl implements RegisterUsageUseCase {
     HourUsageRepository hourUsageRepository;
     UserAircraftBalanceRepository balanceRepository;
     AccessValidationUseCase accessValidationUseCase;
+    UserActivePolicy userActivePolicy;
 
     @Override
     public RegisterUsageResponseDto apply(RegisterUsageRequestDto request) {
@@ -62,6 +64,7 @@ public class RegisterUsageUseCaseImpl implements RegisterUsageUseCase {
         final String currentUsername = SecurityUtil.currentUsername();
         final User createdBy = userRepository.findByUsername(currentUsername)
                 .orElseThrow(() -> new NotFoundException("Creator user not found"));
+        userActivePolicy.apply(createdBy);
 
         final HourUsage usage = HourUsage.builder()
                 .academy(academy)

@@ -3,6 +3,7 @@ package com.espectrosoft.flightTracker.application.modules.hours.usecase.impl;
 import com.espectrosoft.flightTracker.application.dto.hours.PurchaseHoursRequestDto;
 import com.espectrosoft.flightTracker.application.dto.hours.PurchaseHoursResponseDto;
 import com.espectrosoft.flightTracker.application.core.policy.AccessValidationUseCase;
+import com.espectrosoft.flightTracker.application.core.policy.validations.UserActivePolicy;
 import com.espectrosoft.flightTracker.application.modules.hours.usecase.PurchaseHoursUseCase;
 import com.espectrosoft.flightTracker.application.exception.BusinessException;
 import com.espectrosoft.flightTracker.application.exception.NotFoundException;
@@ -29,6 +30,7 @@ public class PurchaseHoursUseCaseImpl implements PurchaseHoursUseCase {
     HourPurchaseRepository hourPurchaseRepository;
     UserAircraftBalanceRepository balanceRepository;
     AccessValidationUseCase accessValidationUseCase;
+    UserActivePolicy userActivePolicy;
 
     @Override
     public PurchaseHoursResponseDto apply(PurchaseHoursRequestDto request) {
@@ -63,6 +65,7 @@ public class PurchaseHoursUseCaseImpl implements PurchaseHoursUseCase {
         final String currentUsername = SecurityUtil.currentUsername();
         final User createdBy = userRepository.findByUsername(currentUsername)
                 .orElseThrow(() -> new NotFoundException("Creator user not found"));
+        userActivePolicy.apply(createdBy);
 
         final HourPurchase purchase = HourPurchase.builder()
                 .academy(academy)

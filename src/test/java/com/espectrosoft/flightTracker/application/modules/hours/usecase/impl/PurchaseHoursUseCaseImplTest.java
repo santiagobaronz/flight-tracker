@@ -5,6 +5,7 @@ import com.espectrosoft.flightTracker.application.dto.hours.PurchaseHoursRespons
 import com.espectrosoft.flightTracker.application.exception.BusinessException;
 import com.espectrosoft.flightTracker.application.exception.NotFoundException;
 import com.espectrosoft.flightTracker.application.core.policy.AccessValidationUseCase;
+import com.espectrosoft.flightTracker.application.core.policy.validations.UserActivePolicy;
 import com.espectrosoft.flightTracker.domain.model.*;
 import com.espectrosoft.flightTracker.domain.model.enums.ModuleCode;
 import com.espectrosoft.flightTracker.domain.repository.*;
@@ -40,6 +41,8 @@ class PurchaseHoursUseCaseImplTest {
     private UserAircraftBalanceRepository balanceRepository;
     @Mock
     private AccessValidationUseCase accessValidationUseCase;
+    @Mock
+    private UserActivePolicy userActivePolicy;
 
     private PurchaseHoursUseCaseImpl useCase;
 
@@ -51,7 +54,8 @@ class PurchaseHoursUseCaseImplTest {
                 aircraftRepository,
                 hourPurchaseRepository,
                 balanceRepository,
-                accessValidationUseCase
+                accessValidationUseCase,
+                userActivePolicy
         );
         final SecurityContext context = SecurityContextHolder.createEmptyContext();
         context.setAuthentication(new UsernamePasswordAuthenticationToken("admin", ""));
@@ -79,6 +83,7 @@ class PurchaseHoursUseCaseImplTest {
         when(hourPurchaseRepository.existsByReceiptNumberAndAircraft("R-1", aircraft)).thenReturn(false);
         when(hourPurchaseRepository.findByAcademyAndReceiptNumber(academy, "R-1")).thenReturn(List.of());
         when(userRepository.findByUsername("admin")).thenReturn(Optional.of(creator));
+        doNothing().when(userActivePolicy).apply(eq(creator));
         when(hourPurchaseRepository.save(any(HourPurchase.class))).thenAnswer(inv -> {
             final HourPurchase p = inv.getArgument(0, HourPurchase.class);
             return HourPurchase.builder()
@@ -108,6 +113,7 @@ class PurchaseHoursUseCaseImplTest {
         verify(hourPurchaseRepository).existsByReceiptNumberAndAircraft("R-1", aircraft);
         verify(hourPurchaseRepository).findByAcademyAndReceiptNumber(academy, "R-1");
         verify(userRepository).findByUsername("admin");
+        verify(userActivePolicy).apply(eq(creator));
         verify(hourPurchaseRepository).save(any(HourPurchase.class));
         verify(balanceRepository).findByPilotAndAircraft(pilot, aircraft);
         verify(balanceRepository).save(any(UserAircraftBalance.class));

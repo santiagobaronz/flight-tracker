@@ -11,6 +11,7 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.stereotype.Component;
+import java.util.Collections;
 
 @Component
 @RequiredArgsConstructor
@@ -25,7 +26,15 @@ public class GetModuleStatusUseCaseImpl implements GetModuleStatusUseCase {
         final Academy academy = academyRepository.findById(academyId)
                 .orElseThrow(() -> new NotFoundException("Academy not found"));
         return academyModuleRepository.findByAcademyAndModuleCode(academy, moduleCode)
-                .map(am -> new ModuleStatusDto(academyId, moduleCode, am.isActive()))
-                .orElseGet(() -> new ModuleStatusDto(academyId, moduleCode, false));
+                .map(am -> {
+                    final ModuleStatusDto dto = new ModuleStatusDto(academyId, moduleCode, am.isActive());
+                    dto.setAttributes(am.getAttributes());
+                    return dto;
+                })
+                .orElseGet(() -> {
+                    final ModuleStatusDto dto = new ModuleStatusDto(academyId, moduleCode, false);
+                    dto.setAttributes(Collections.emptyList());
+                    return dto;
+                });
     }
 }

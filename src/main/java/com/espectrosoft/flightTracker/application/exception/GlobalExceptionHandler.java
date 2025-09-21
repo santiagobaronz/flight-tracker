@@ -98,6 +98,15 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.FORBIDDEN).body(body);
     }
 
+    @ExceptionHandler(UserInactiveException.class)
+    public ResponseEntity<Map<String, Object>> handleUserInactive(UserInactiveException ex) {
+        log.warn("User inactive: {}", ex.getMessage());
+        Map<String, Object> body = new HashMap<>();
+        body.put("status", HttpStatus.FORBIDDEN.value());
+        body.put("message", "User is inactive");
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(body);
+    }
+
     @ExceptionHandler(Exception.class)
     public ResponseEntity<Map<String, Object>> handleOther(Exception ex) {
         log.error("Unexpected error", ex);
