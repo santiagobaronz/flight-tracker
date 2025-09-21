@@ -15,6 +15,8 @@ import com.espectrosoft.flightTracker.domain.model.Academy;
 import com.espectrosoft.flightTracker.domain.model.Aircraft;
 import com.espectrosoft.flightTracker.domain.model.User;
 import com.espectrosoft.flightTracker.domain.model.enums.ModuleCode;
+import com.espectrosoft.flightTracker.domain.model.enums.ModuleSection;
+import com.espectrosoft.flightTracker.domain.model.enums.PermissionAction;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -37,7 +39,7 @@ public class HoursServiceImpl implements HoursService {
     public PurchaseHoursResponseDto purchaseHours(PurchaseHoursRequestDto request) {
         final Academy academy = domainLookup.requireAcademy(request.getAcademyId());
         final User currentUser = domainLookup.requireCurrentUser();
-        moduleAccessPolicy.validate(academy, currentUser, ModuleCode.HOURS);
+        moduleAccessPolicy.validate(academy, currentUser, ModuleSection.APPLICATION, ModuleCode.HOURS, PermissionAction.CREATE);
         return purchaseHoursUseCase.apply(request);
     }
 
@@ -45,7 +47,7 @@ public class HoursServiceImpl implements HoursService {
     public RegisterUsageResponseDto registerUsage(RegisterUsageRequestDto request) {
         final Academy academy = domainLookup.requireAcademy(request.getAcademyId());
         final User currentUser = domainLookup.requireCurrentUser();
-        moduleAccessPolicy.validate(academy, currentUser, ModuleCode.HOURS);
+        moduleAccessPolicy.validate(academy, currentUser, ModuleSection.APPLICATION, ModuleCode.HOURS, PermissionAction.EDIT);
         return registerUsageUseCase.apply(request);
     }
 
@@ -53,7 +55,7 @@ public class HoursServiceImpl implements HoursService {
     public UserAircraftBalanceDto getBalance(Long pilotId, Long aircraftId) {
         final Aircraft aircraft = domainLookup.requireAircraft(aircraftId);
         final User currentUser = domainLookup.requireCurrentUser();
-        moduleAccessPolicy.validate(aircraft.getAcademy(), currentUser, ModuleCode.HOURS);
+        moduleAccessPolicy.validate(aircraft.getAcademy(), currentUser, ModuleSection.APPLICATION, ModuleCode.HOURS, PermissionAction.VIEW);
         return getBalanceUseCase.apply(pilotId, aircraftId);
     }
 }

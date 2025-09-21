@@ -15,6 +15,8 @@ import com.espectrosoft.flightTracker.domain.model.Aircraft;
 import com.espectrosoft.flightTracker.domain.model.User;
 import com.espectrosoft.flightTracker.domain.model.enums.AircraftType;
 import com.espectrosoft.flightTracker.domain.model.enums.ModuleCode;
+import com.espectrosoft.flightTracker.domain.model.enums.ModuleSection;
+import com.espectrosoft.flightTracker.domain.model.enums.PermissionAction;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -65,7 +67,7 @@ class HoursServiceImplTest {
         assertNotNull(res);
         assertEquals(1L, res.getPurchaseId());
         assertEquals(2.0, res.getBalanceHours());
-        verify(moduleAccessPolicy).validate(eq(academy), eq(current), eq(ModuleCode.HOURS));
+        verify(moduleAccessPolicy).validate(eq(academy), eq(current), eq(ModuleSection.APPLICATION), eq(ModuleCode.HOURS), eq(PermissionAction.CREATE));
         verify(purchaseHoursUseCase).apply(eq(req));
     }
 
@@ -85,7 +87,7 @@ class HoursServiceImplTest {
         assertNotNull(res);
         assertEquals(7L, res.getUsageId());
         assertEquals(3.5, res.getBalanceHours());
-        verify(moduleAccessPolicy).validate(eq(academy), eq(current), eq(ModuleCode.HOURS));
+        verify(moduleAccessPolicy).validate(eq(academy), eq(current), eq(ModuleSection.APPLICATION), eq(ModuleCode.HOURS), eq(PermissionAction.EDIT));
         verify(registerUsageUseCase).apply(eq(req));
     }
 
@@ -106,7 +108,7 @@ class HoursServiceImplTest {
         assertEquals(5.0, res.getTotalPurchased());
         assertEquals(2.0, res.getTotalUsed());
         assertEquals(3.0, res.getBalanceHours());
-        verify(moduleAccessPolicy).validate(eq(aircraft.getAcademy()), eq(current), eq(ModuleCode.HOURS));
+        verify(moduleAccessPolicy).validate(eq(aircraft.getAcademy()), eq(current), eq(ModuleSection.APPLICATION), eq(ModuleCode.HOURS), eq(PermissionAction.VIEW));
         verify(getBalanceUseCase).apply(eq(10L), eq(100L));
     }
 }

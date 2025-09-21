@@ -4,6 +4,7 @@ import com.espectrosoft.flightTracker.application.exception.types.ModuleDisabled
 import com.espectrosoft.flightTracker.domain.model.Academy;
 import com.espectrosoft.flightTracker.domain.model.AcademyModule;
 import com.espectrosoft.flightTracker.domain.model.enums.ModuleCode;
+import com.espectrosoft.flightTracker.domain.model.enums.ModuleSection;
 import com.espectrosoft.flightTracker.domain.repository.AcademyModuleRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -39,7 +40,7 @@ class ModuleEnabledPolicyImplTest {
         final AcademyModule am = AcademyModule.builder().academy(academy).moduleCode(ModuleCode.HOURS).active(true).build();
         when(academyModuleRepository.findByAcademyAndModuleCode(eq(academy), eq(ModuleCode.HOURS))).thenReturn(Optional.of(am));
 
-        assertDoesNotThrow(() -> policy.apply(academy, ModuleCode.HOURS));
+        assertDoesNotThrow(() -> policy.apply(academy, ModuleSection.APPLICATION, ModuleCode.HOURS));
         verify(academyModuleRepository).findByAcademyAndModuleCode(eq(academy), eq(ModuleCode.HOURS));
     }
 
@@ -48,7 +49,7 @@ class ModuleEnabledPolicyImplTest {
         final Academy academy = Academy.builder().id(1L).name("A").build();
         when(academyModuleRepository.findByAcademyAndModuleCode(eq(academy), eq(ModuleCode.HOURS))).thenReturn(Optional.empty());
 
-        assertThrows(ModuleDisabledException.class, () -> policy.apply(academy, ModuleCode.HOURS));
+        assertThrows(ModuleDisabledException.class, () -> policy.apply(academy, ModuleSection.APPLICATION, ModuleCode.HOURS));
         verify(academyModuleRepository).findByAcademyAndModuleCode(eq(academy), eq(ModuleCode.HOURS));
     }
 
@@ -58,7 +59,7 @@ class ModuleEnabledPolicyImplTest {
         final AcademyModule am = AcademyModule.builder().academy(academy).moduleCode(ModuleCode.HOURS).active(false).build();
         when(academyModuleRepository.findByAcademyAndModuleCode(eq(academy), eq(ModuleCode.HOURS))).thenReturn(Optional.of(am));
 
-        assertThrows(ModuleDisabledException.class, () -> policy.apply(academy, ModuleCode.HOURS));
+        assertThrows(ModuleDisabledException.class, () -> policy.apply(academy, ModuleSection.APPLICATION, ModuleCode.HOURS));
         verify(academyModuleRepository).findByAcademyAndModuleCode(eq(academy), eq(ModuleCode.HOURS));
     }
 }

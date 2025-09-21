@@ -27,14 +27,20 @@ public class AircraftController {
         return ResponseEntity.ok(aircraftService.listByAcademy(academyId));
     }
 
+    @GetMapping("/management")
+    @PreAuthorize("isAuthenticated()")
+    public ResponseEntity<List<AircraftDto>> listForManagement(@RequestParam Long academyId) {
+        return ResponseEntity.ok(aircraftService.listAllByAcademyForManagement(academyId));
+    }
+
     @PutMapping("/{id}")
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("isAuthenticated()")
     public ResponseEntity<AircraftDto> update(@PathVariable Long id, @Valid @RequestBody UpdateAircraftRequestDto request) {
         return ResponseEntity.ok(aircraftService.update(id, request));
     }
 
     @PatchMapping("/{id}/active")
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("isAuthenticated()")
     public ResponseEntity<AircraftDto> setActive(@PathVariable Long id, @Valid @RequestBody SetActiveRequestDto request) {
         return ResponseEntity.ok(aircraftService.setActive(id, request));
     }

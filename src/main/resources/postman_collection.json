@@ -108,6 +108,42 @@
             }
           },
           "response": []
+        },
+        {
+          "name": "List All Modules (Authenticated)",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/modules/all?academyId={{academyId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api","modules","all"],
+              "query": [ { "key": "academyId", "value": "{{academyId}}" } ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Module Info (Authenticated)",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/modules/info?academyId={{academyId}}&section=APPLICATION&moduleCode={{moduleCode}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api","modules","info"],
+              "query": [
+                { "key": "academyId", "value": "{{academyId}}" },
+                { "key": "section", "value": "APPLICATION" },
+                { "key": "moduleCode", "value": "{{moduleCode}}" }
+              ]
+            }
+          },
+          "response": []
         }
       ]
     },
@@ -222,6 +258,22 @@
               "raw": "{{baseUrl}}/api/aircraft?academyId={{academyId}}",
               "host": ["{{baseUrl}}"],
               "path": ["api","aircraft"],
+              "query": [ { "key": "academyId", "value": "{{academyId}}" } ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "List Aircraft Management (ADMIN)",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/aircraft/management?academyId={{academyId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api","aircraft","management"],
               "query": [ { "key": "academyId", "value": "{{academyId}}" } ]
             }
           },

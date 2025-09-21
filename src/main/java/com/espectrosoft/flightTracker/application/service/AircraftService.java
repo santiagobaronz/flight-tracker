@@ -8,6 +8,7 @@ import java.util.List;
 
 public interface AircraftService {
     List<AircraftDto> listByAcademy(Long academyId);
+    List<AircraftDto> listAllByAcademyForManagement(Long academyId);
     AircraftDto update(Long id, UpdateAircraftRequestDto request);
     AircraftDto setActive(Long id, SetActiveRequestDto request);
 }

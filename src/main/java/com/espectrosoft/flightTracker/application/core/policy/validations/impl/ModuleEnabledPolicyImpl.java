@@ -5,6 +5,7 @@ import com.espectrosoft.flightTracker.application.exception.types.ModuleDisabled
 import com.espectrosoft.flightTracker.domain.model.Academy;
 import com.espectrosoft.flightTracker.domain.model.AcademyModule;
 import com.espectrosoft.flightTracker.domain.model.enums.ModuleCode;
+import com.espectrosoft.flightTracker.domain.model.enums.ModuleSection;
 import com.espectrosoft.flightTracker.domain.repository.AcademyModuleRepository;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -19,7 +20,7 @@ public class ModuleEnabledPolicyImpl implements ModuleEnabledPolicy {
     AcademyModuleRepository academyModuleRepository;
 
     @Override
-    public void apply(Academy academy, ModuleCode module) {
+    public void apply(Academy academy, ModuleSection section, ModuleCode module) {
         academyModuleRepository.findByAcademyAndModuleCode(academy, module)
                 .filter(AcademyModule::isActive)
                 .orElseThrow(() -> new ModuleDisabledException("Module is disabled for this academy"));

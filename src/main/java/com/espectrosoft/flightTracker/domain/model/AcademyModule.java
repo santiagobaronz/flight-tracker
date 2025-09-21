@@ -1,6 +1,7 @@
 package com.espectrosoft.flightTracker.domain.model;
 
 import com.espectrosoft.flightTracker.domain.model.enums.ModuleCode;
+import com.espectrosoft.flightTracker.domain.model.enums.ModuleSection;
 import jakarta.persistence.*;
 import lombok.*;
 import java.util.ArrayList;
@@ -22,6 +23,11 @@ public class AcademyModule {
     @ManyToOne(optional = false)
     @JoinColumn(name = "academy_id")
     private Academy academy;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "section", nullable = false, length = 20)
+    @Builder.Default
+    private ModuleSection section = ModuleSection.APPLICATION;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "module_code", nullable = false, length = 40)

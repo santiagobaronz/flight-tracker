@@ -10,4 +10,5 @@ import java.util.Optional;
 public interface AircraftRepository extends JpaRepository<Aircraft, Long> {
     Optional<Aircraft> findByAcademyAndRegistration(Academy academy, String registration);
     List<Aircraft> findByAcademy(Academy academy);
+    List<Aircraft> findByAcademyAndIsActiveTrue(Academy academy);
 }

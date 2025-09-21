@@ -2,19 +2,24 @@ package com.espectrosoft.flightTracker.application.service.impl;
 
 import com.espectrosoft.flightTracker.application.dto.module.ModuleStatusDto;
 import com.espectrosoft.flightTracker.application.dto.module.ModuleToggleRequestDto;
+import com.espectrosoft.flightTracker.application.dto.module.ModuleInfoDto;
 import com.espectrosoft.flightTracker.application.modules.management.modules.usecase.GetModuleStatusUseCase;
 import com.espectrosoft.flightTracker.application.modules.management.modules.usecase.ToggleModuleUseCase;
+import com.espectrosoft.flightTracker.application.modules.shared.modules.usecase.ListModulesUseCase;
+import com.espectrosoft.flightTracker.application.modules.shared.modules.usecase.GetModuleInfoUseCase;
 import com.espectrosoft.flightTracker.application.service.ModuleService;
 import com.espectrosoft.flightTracker.application.core.policy.access.InternalAccessPolicy;
 import com.espectrosoft.flightTracker.application.core.lookup.DomainLookup;
 import com.espectrosoft.flightTracker.domain.model.Academy;
 import com.espectrosoft.flightTracker.domain.model.User;
 import com.espectrosoft.flightTracker.domain.model.enums.ModuleCode;
+import com.espectrosoft.flightTracker.domain.model.enums.ModuleSection;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import java.util.List;
 
 @Service
 @Transactional
@@ -24,6 +29,8 @@ public class ModuleServiceImpl implements ModuleService {
 
     ToggleModuleUseCase toggleModuleUseCase;
     GetModuleStatusUseCase getModuleStatusUseCase;
+    ListModulesUseCase listModulesUseCase;
+    GetModuleInfoUseCase getModuleInfoUseCase;
     InternalAccessPolicy internalAccessPolicy;
     DomainLookup domainLookup;
 
@@ -41,5 +48,21 @@ public class ModuleServiceImpl implements ModuleService {
         final User currentUser = domainLookup.requireCurrentUser();
         internalAccessPolicy.validate(academy, currentUser);
         return getModuleStatusUseCase.apply(academyId, moduleCode);
+    }
+
+    @Override
+    public List<ModuleInfoDto> listAll(Long academyId) {
+        final Academy academy = domainLookup.requireAcademy(academyId);
+        final User currentUser = domainLookup.requireCurrentUser();
+        internalAccessPolicy.validate(academy, currentUser);
+        return listModulesUseCase.apply(academyId);
+    }
+
+    @Override
+    public ModuleInfoDto info(Long academyId, ModuleSection section, ModuleCode moduleCode) {
+        final Academy academy = domainLookup.requireAcademy(academyId);
+        final User currentUser = domainLookup.requireCurrentUser();
+        internalAccessPolicy.validate(academy, currentUser);
+        return getModuleInfoUseCase.apply(academyId, section, moduleCode);
     }
 }
