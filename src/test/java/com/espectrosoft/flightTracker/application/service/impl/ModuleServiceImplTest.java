@@ -2,8 +2,8 @@ package com.espectrosoft.flightTracker.application.service.impl;
 
 import com.espectrosoft.flightTracker.application.dto.module.ModuleStatusDto;
 import com.espectrosoft.flightTracker.application.dto.module.ModuleToggleRequestDto;
-import com.espectrosoft.flightTracker.application.modules.modules.usecase.GetModuleStatusUseCase;
-import com.espectrosoft.flightTracker.application.modules.modules.usecase.ToggleModuleUseCase;
+import com.espectrosoft.flightTracker.application.modules.management.modules.usecase.GetModuleStatusUseCase;
+import com.espectrosoft.flightTracker.application.modules.management.modules.usecase.ToggleModuleUseCase;
 import com.espectrosoft.flightTracker.application.core.policy.access.InternalAccessPolicy;
 import com.espectrosoft.flightTracker.application.core.lookup.DomainLookup;
 import com.espectrosoft.flightTracker.domain.model.Academy;

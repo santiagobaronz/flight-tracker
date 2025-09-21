@@ -5,9 +5,9 @@ import com.espectrosoft.flightTracker.application.dto.hours.PurchaseHoursRespons
 import com.espectrosoft.flightTracker.application.dto.hours.RegisterUsageRequestDto;
 import com.espectrosoft.flightTracker.application.dto.hours.RegisterUsageResponseDto;
 import com.espectrosoft.flightTracker.application.dto.hours.UserAircraftBalanceDto;
-import com.espectrosoft.flightTracker.application.modules.hours.usecase.GetBalanceUseCase;
-import com.espectrosoft.flightTracker.application.modules.hours.usecase.PurchaseHoursUseCase;
-import com.espectrosoft.flightTracker.application.modules.hours.usecase.RegisterUsageUseCase;
+import com.espectrosoft.flightTracker.application.modules.application.hours.usecase.GetBalanceUseCase;
+import com.espectrosoft.flightTracker.application.modules.application.hours.usecase.PurchaseHoursUseCase;
+import com.espectrosoft.flightTracker.application.modules.application.hours.usecase.RegisterUsageUseCase;
 import com.espectrosoft.flightTracker.application.service.HoursService;
 import com.espectrosoft.flightTracker.application.core.policy.access.ModuleAccessPolicy;
 import com.espectrosoft.flightTracker.application.core.lookup.DomainLookup;

@@ -4,6 +4,7 @@ import com.espectrosoft.flightTracker.application.exception.types.NotFoundExcept
 import com.espectrosoft.flightTracker.domain.model.Academy;
 import com.espectrosoft.flightTracker.domain.model.Aircraft;
 import com.espectrosoft.flightTracker.domain.model.User;
+import com.espectrosoft.flightTracker.domain.model.enums.AircraftType;
 import com.espectrosoft.flightTracker.domain.repository.AcademyRepository;
 import com.espectrosoft.flightTracker.domain.repository.AircraftRepository;
 import com.espectrosoft.flightTracker.domain.repository.UserRepository;
@@ -63,7 +64,7 @@ class DomainLookupImplTest {
     @Test
     void requireAircraft_found() {
         final Academy academy = Academy.builder().id(1L).name("A").build();
-        final Aircraft aircraft = Aircraft.builder().id(100L).academy(academy).tailNumber("HK").model("M").type("SEL").build();
+        final Aircraft aircraft = Aircraft.builder().id(100L).academy(academy).registration("HK").model("M").type(AircraftType.AIRCRAFT).build();
         when(aircraftRepository.findById(eq(100L))).thenReturn(Optional.of(aircraft));
 
         final Aircraft res = lookup.requireAircraft(100L);

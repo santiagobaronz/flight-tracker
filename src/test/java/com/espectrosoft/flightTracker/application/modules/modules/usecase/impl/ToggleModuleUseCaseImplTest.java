@@ -3,6 +3,7 @@ package com.espectrosoft.flightTracker.application.modules.modules.usecase.impl;
 import com.espectrosoft.flightTracker.application.dto.module.ModuleStatusDto;
 import com.espectrosoft.flightTracker.application.dto.module.ModuleToggleRequestDto;
 import com.espectrosoft.flightTracker.application.core.policy.validations.AcademyActivePolicy;
+import com.espectrosoft.flightTracker.application.modules.management.modules.usecase.impl.ToggleModuleUseCaseImpl;
 import com.espectrosoft.flightTracker.domain.model.Academy;
 import com.espectrosoft.flightTracker.domain.model.AcademyModule;
 import com.espectrosoft.flightTracker.domain.model.enums.ModuleCode;
@@ -33,7 +34,8 @@ class ToggleModuleUseCaseImplTest {
     private AcademyActivePolicy academyActivePolicy;
 
     @InjectMocks
-    private ToggleModuleUseCaseImpl useCase;
+    private ToggleModuleUseCaseImpl
+        useCase;
 
     @Test
     void toggle_creates_or_updates() {

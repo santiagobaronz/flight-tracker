@@ -2,6 +2,7 @@ package com.espectrosoft.flightTracker.application.modules.auth.usecase.impl;
 
 import com.espectrosoft.flightTracker.application.dto.auth.LoginRequestDto;
 import com.espectrosoft.flightTracker.application.dto.auth.LoginResponseDto;
+import com.espectrosoft.flightTracker.application.modules.application.auth.usecase.impl.LoginUseCaseImpl;
 import com.espectrosoft.flightTracker.application.security.JwtService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -30,7 +31,8 @@ class LoginUseCaseImplTest {
     private JwtService jwtService;
 
     @InjectMocks
-    private LoginUseCaseImpl useCase;
+    private LoginUseCaseImpl
+        useCase;
 
     @Test
     void login_ok_returns_token() {

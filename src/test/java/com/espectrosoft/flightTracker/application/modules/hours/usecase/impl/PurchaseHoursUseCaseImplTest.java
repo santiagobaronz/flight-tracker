@@ -4,7 +4,9 @@ import com.espectrosoft.flightTracker.application.dto.hours.PurchaseHoursRequest
 import com.espectrosoft.flightTracker.application.dto.hours.PurchaseHoursResponseDto;
 import com.espectrosoft.flightTracker.application.exception.types.BusinessException;
 import com.espectrosoft.flightTracker.application.exception.types.NotFoundException;
+import com.espectrosoft.flightTracker.application.modules.application.hours.usecase.impl.PurchaseHoursUseCaseImpl;
 import com.espectrosoft.flightTracker.domain.model.*;
+import com.espectrosoft.flightTracker.domain.model.enums.AircraftType;
 import com.espectrosoft.flightTracker.domain.repository.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -37,7 +39,8 @@ class PurchaseHoursUseCaseImplTest {
     @Mock
     private UserAircraftBalanceRepository balanceRepository;
 
-    private PurchaseHoursUseCaseImpl useCase;
+    private PurchaseHoursUseCaseImpl
+        useCase;
 
     @BeforeEach
     void setUp() {
@@ -57,7 +60,7 @@ class PurchaseHoursUseCaseImplTest {
     void purchase_ok_updates_balance_and_persists() {
         final Academy academy = Academy.builder().id(1L).name("A").build();
         final User pilot = User.builder().id(10L).username("p1").academy(academy).fullName("P").password("x").build();
-        final Aircraft aircraft = Aircraft.builder().id(100L).academy(academy).tailNumber("HK-1").model("M").type("SEL").build();
+        final Aircraft aircraft = Aircraft.builder().id(100L).academy(academy).registration("HK-1").model("M").type(AircraftType.AIRCRAFT).build();
         final User creator = User.builder().id(2L).username("admin").academy(academy).fullName("Admin").password("p").build();
         final PurchaseHoursRequestDto req = new PurchaseHoursRequestDto();
         req.setAcademyId(1L);
@@ -110,7 +113,7 @@ class PurchaseHoursUseCaseImplTest {
     void duplicate_receipt_for_aircraft_throws_business() {
         final Academy academy = Academy.builder().id(1L).name("A").build();
         final User pilot = User.builder().id(10L).username("p1").academy(academy).fullName("P").password("x").build();
-        final Aircraft aircraft = Aircraft.builder().id(100L).academy(academy).tailNumber("HK-1").model("M").type("SEL").build();
+        final Aircraft aircraft = Aircraft.builder().id(100L).academy(academy).registration("HK-1").model("M").type(AircraftType.AIRCRAFT).build();
         final PurchaseHoursRequestDto req = new PurchaseHoursRequestDto();
         req.setAcademyId(1L);
         req.setPilotId(10L);
@@ -136,8 +139,8 @@ class PurchaseHoursUseCaseImplTest {
     void receipt_type_inconsistency_throws_business() {
         final Academy academy = Academy.builder().id(1L).name("A").build();
         final User pilot = User.builder().id(10L).username("p1").academy(academy).fullName("P").password("x").build();
-        final Aircraft aircraft = Aircraft.builder().id(100L).academy(academy).tailNumber("HK-1").model("M").type("MEL").build();
-        final Aircraft prevAircraft = Aircraft.builder().id(200L).academy(academy).tailNumber("HK-2").model("M").type("SEL").build();
+        final Aircraft aircraft = Aircraft.builder().id(100L).academy(academy).registration("HK-1").model("M").type(AircraftType.SIMULATOR).build();
+        final Aircraft prevAircraft = Aircraft.builder().id(200L).academy(academy).registration("HK-2").model("M").type(AircraftType.AIRCRAFT).build();
         final HourPurchase prev = HourPurchase.builder().id(9L).academy(academy).pilot(pilot).aircraft(prevAircraft).receiptNumber("R-1").hours(1).build();
         final PurchaseHoursRequestDto req = new PurchaseHoursRequestDto();
         req.setAcademyId(1L);

@@ -5,14 +5,15 @@ import com.espectrosoft.flightTracker.application.dto.hours.PurchaseHoursRespons
 import com.espectrosoft.flightTracker.application.dto.hours.RegisterUsageRequestDto;
 import com.espectrosoft.flightTracker.application.dto.hours.RegisterUsageResponseDto;
 import com.espectrosoft.flightTracker.application.dto.hours.UserAircraftBalanceDto;
-import com.espectrosoft.flightTracker.application.modules.hours.usecase.GetBalanceUseCase;
-import com.espectrosoft.flightTracker.application.modules.hours.usecase.PurchaseHoursUseCase;
-import com.espectrosoft.flightTracker.application.modules.hours.usecase.RegisterUsageUseCase;
+import com.espectrosoft.flightTracker.application.modules.application.hours.usecase.GetBalanceUseCase;
+import com.espectrosoft.flightTracker.application.modules.application.hours.usecase.PurchaseHoursUseCase;
+import com.espectrosoft.flightTracker.application.modules.application.hours.usecase.RegisterUsageUseCase;
 import com.espectrosoft.flightTracker.application.core.policy.access.ModuleAccessPolicy;
 import com.espectrosoft.flightTracker.application.core.lookup.DomainLookup;
 import com.espectrosoft.flightTracker.domain.model.Academy;
 import com.espectrosoft.flightTracker.domain.model.Aircraft;
 import com.espectrosoft.flightTracker.domain.model.User;
+import com.espectrosoft.flightTracker.domain.model.enums.AircraftType;
 import com.espectrosoft.flightTracker.domain.model.enums.ModuleCode;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -90,7 +91,7 @@ class HoursServiceImplTest {
 
     @Test
     void get_balance_delegates_to_usecase() {
-        final Aircraft aircraft = Aircraft.builder().id(100L).academy(Academy.builder().id(1L).name("A").build()).tailNumber("HK").model("M").type("SEL").build();
+        final Aircraft aircraft = Aircraft.builder().id(100L).academy(Academy.builder().id(1L).name("A").build()).registration("HK").model("M").type(AircraftType.AIRCRAFT).build();
         final User current = User.builder().id(2L).username("admin").academy(aircraft.getAcademy()).fullName("Admin").password("p").build();
         final UserAircraftBalanceDto expected = new UserAircraftBalanceDto(10L, 100L, 5.0, 2.0, 3.0);
         when(domainLookup.requireAircraft(eq(100L))).thenReturn(aircraft);

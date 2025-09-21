@@ -4,7 +4,7 @@ import com.espectrosoft.flightTracker.application.core.lookup.DomainLookup;
 import com.espectrosoft.flightTracker.application.core.policy.access.InternalAccessPolicy;
 import com.espectrosoft.flightTracker.application.dto.auth.LoginRequestDto;
 import com.espectrosoft.flightTracker.application.dto.auth.LoginResponseDto;
-import com.espectrosoft.flightTracker.application.modules.auth.usecase.LoginUseCase;
+import com.espectrosoft.flightTracker.application.modules.application.auth.usecase.LoginUseCase;
 import com.espectrosoft.flightTracker.application.service.AuthService;
 import com.espectrosoft.flightTracker.domain.model.User;
 import lombok.AccessLevel;

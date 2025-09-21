@@ -207,6 +207,67 @@
           ]
         }
       ]
+    },
+    {
+      "name": "Aircraft",
+      "item": [
+        {
+          "name": "List Aircraft (Authenticated)",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/aircraft?academyId={{academyId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api","aircraft"],
+              "query": [ { "key": "academyId", "value": "{{academyId}}" } ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update Aircraft (ADMIN)",
+          "request": {
+            "method": "PUT",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/aircraft/{{aircraftId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api","aircraft","{{aircraftId}}"]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"registration\": \"HK-100\",\n  \"model\": \"C172\",\n  \"type\": \"AIRCRAFT\"\n}"
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Set Aircraft Active (ADMIN)",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/aircraft/{{aircraftId}}/active",
+              "host": ["{{baseUrl}}"],
+              "path": ["api","aircraft","{{aircraftId}}","active"]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"active\": true\n}"
+            }
+          },
+          "response": []
+        }
+      ]
     }
   ]
 }

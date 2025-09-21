@@ -1,8 +1,8 @@
-package com.espectrosoft.flightTracker.application.modules.auth.usecase.impl;
+package com.espectrosoft.flightTracker.application.modules.application.auth.usecase.impl;
 
 import com.espectrosoft.flightTracker.application.dto.auth.LoginRequestDto;
 import com.espectrosoft.flightTracker.application.dto.auth.LoginResponseDto;
-import com.espectrosoft.flightTracker.application.modules.auth.usecase.LoginUseCase;
+import com.espectrosoft.flightTracker.application.modules.application.auth.usecase.LoginUseCase;
 import com.espectrosoft.flightTracker.application.security.JwtService;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;

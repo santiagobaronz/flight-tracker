@@ -3,6 +3,7 @@ package com.espectrosoft.flightTracker.application.seed;
 import com.espectrosoft.flightTracker.domain.model.*;
 import com.espectrosoft.flightTracker.domain.model.enums.ModuleCode;
 import com.espectrosoft.flightTracker.domain.model.enums.PermissionAction;
+import com.espectrosoft.flightTracker.domain.model.enums.AircraftType;
 import com.espectrosoft.flightTracker.domain.repository.*;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -78,11 +79,11 @@ public class SeedConfig {
                 return userRepository.save(u);
             });
 
-            aircraftRepository.findByAcademyAndTailNumber(academy, "HK-100").orElseGet(() ->
-                    aircraftRepository.save(Aircraft.builder().academy(academy).tailNumber("HK-100").model("C172").type("SEL").build())
+            aircraftRepository.findByAcademyAndRegistration(academy, "HK-100").orElseGet(() ->
+                    aircraftRepository.save(Aircraft.builder().academy(academy).registration("HK-100").model("C172").type(AircraftType.AIRCRAFT).build())
             );
-            aircraftRepository.findByAcademyAndTailNumber(academy, "HK-200").orElseGet(() ->
-                    aircraftRepository.save(Aircraft.builder().academy(academy).tailNumber("HK-200").model("C310").type("MEL").build())
+            aircraftRepository.findByAcademyAndRegistration(academy, "HK-200").orElseGet(() ->
+                    aircraftRepository.save(Aircraft.builder().academy(academy).registration("HK-200").model("C310").type(AircraftType.AIRCRAFT).build())
             );
 
             academyModuleRepository.findByAcademyAndModuleCode(academy, ModuleCode.HOURS)

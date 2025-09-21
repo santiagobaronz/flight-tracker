@@ -1,10 +1,10 @@
-package com.espectrosoft.flightTracker.application.modules.hours.usecase.impl;
+package com.espectrosoft.flightTracker.application.modules.application.hours.usecase.impl;
 
-import com.espectrosoft.flightTracker.application.dto.hours.PurchaseHoursRequestDto;
-import com.espectrosoft.flightTracker.application.dto.hours.PurchaseHoursResponseDto;
-import com.espectrosoft.flightTracker.application.modules.hours.usecase.PurchaseHoursUseCase;
+import com.espectrosoft.flightTracker.application.dto.hours.RegisterUsageRequestDto;
+import com.espectrosoft.flightTracker.application.dto.hours.RegisterUsageResponseDto;
 import com.espectrosoft.flightTracker.application.exception.types.BusinessException;
 import com.espectrosoft.flightTracker.application.exception.types.NotFoundException;
+import com.espectrosoft.flightTracker.application.modules.application.hours.usecase.RegisterUsageUseCase;
 import com.espectrosoft.flightTracker.application.util.SecurityUtil;
 import com.espectrosoft.flightTracker.domain.model.*;
 import com.espectrosoft.flightTracker.domain.repository.*;
@@ -13,22 +13,21 @@ import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.stereotype.Component;
 
-import java.util.List;
 import java.util.Objects;
 
 @Component
 @RequiredArgsConstructor
 @FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
-public class PurchaseHoursUseCaseImpl implements PurchaseHoursUseCase {
+public class RegisterUsageUseCaseImpl implements RegisterUsageUseCase {
 
     AcademyRepository academyRepository;
     UserRepository userRepository;
     AircraftRepository aircraftRepository;
-    HourPurchaseRepository hourPurchaseRepository;
+    HourUsageRepository hourUsageRepository;
     UserAircraftBalanceRepository balanceRepository;
 
     @Override
-    public PurchaseHoursResponseDto apply(PurchaseHoursRequestDto request) {
+    public RegisterUsageResponseDto apply(RegisterUsageRequestDto request) {
         final Academy academy = academyRepository.findById(request.getAcademyId())
                 .orElseThrow(() -> new NotFoundException("Academy not found"));
 
@@ -38,51 +37,44 @@ public class PurchaseHoursUseCaseImpl implements PurchaseHoursUseCase {
             throw new BusinessException("Pilot not in academy");
         }
 
+        final User instructor = userRepository.findById(request.getInstructorId())
+                .orElseThrow(() -> new NotFoundException("Instructor not found"));
+        if (!Objects.equals(instructor.getAcademy().getId(), academy.getId())) {
+            throw new BusinessException("Instructor not in academy");
+        }
+
         final Aircraft aircraft = aircraftRepository.findById(request.getAircraftId())
                 .orElseThrow(() -> new NotFoundException("Aircraft not found"));
         if (!Objects.equals(aircraft.getAcademy().getId(), academy.getId())) {
             throw new BusinessException("Aircraft not in academy");
         }
 
-        if (hourPurchaseRepository.existsByReceiptNumberAndAircraft(request.getReceiptNumber(), aircraft)) {
-            throw new BusinessException("Duplicate receipt for aircraft");
-        }
-
-        final List<HourPurchase> sameReceipt = hourPurchaseRepository.findByAcademyAndReceiptNumber(academy, request.getReceiptNumber());
-        if (!sameReceipt.isEmpty()) {
-            final String expectedType = sameReceipt.get(0).getAircraft().getType();
-            if (!Objects.equals(expectedType, aircraft.getType())) {
-                throw new BusinessException("Receipt must be for same aircraft type");
-            }
+        final UserAircraftBalance balance = balanceRepository.findByPilotAndAircraft(pilot, aircraft)
+                .orElseThrow(() -> new BusinessException("No balance for pilot and aircraft"));
+        if (request.getHours() > balance.getBalanceHours()) {
+            throw new BusinessException("Insufficient hours balance");
         }
 
         final String currentUsername = SecurityUtil.currentUsername();
         final User createdBy = userRepository.findByUsername(currentUsername)
                 .orElseThrow(() -> new NotFoundException("Creator user not found"));
 
-        final HourPurchase purchase = HourPurchase.builder()
+        final HourUsage usage = HourUsage.builder()
                 .academy(academy)
                 .pilot(pilot)
                 .aircraft(aircraft)
-                .receiptNumber(request.getReceiptNumber())
+                .instructor(instructor)
                 .hours(request.getHours())
-                .purchaseDate(request.getPurchaseDate())
+                .flightDate(request.getFlightDate())
+                .logbookNumber(request.getLogbookNumber())
                 .createdBy(createdBy)
                 .build();
-        final HourPurchase saved = hourPurchaseRepository.save(purchase);
+        final HourUsage saved = hourUsageRepository.save(usage);
 
-        final UserAircraftBalance balance = balanceRepository.findByPilotAndAircraft(pilot, aircraft)
-                .orElseGet(() -> UserAircraftBalance.builder()
-                        .pilot(pilot)
-                        .aircraft(aircraft)
-                        .totalPurchased(0)
-                        .totalUsed(0)
-                        .balanceHours(0)
-                        .build());
-        balance.setTotalPurchased(balance.getTotalPurchased() + request.getHours());
-        balance.setBalanceHours(balance.getBalanceHours() + request.getHours());
+        balance.setTotalUsed(balance.getTotalUsed() + request.getHours());
+        balance.setBalanceHours(balance.getBalanceHours() - request.getHours());
         balanceRepository.save(balance);
 
-        return new PurchaseHoursResponseDto(saved.getId(), balance.getBalanceHours());
+        return new RegisterUsageResponseDto(saved.getId(), balance.getBalanceHours());
     }
 }

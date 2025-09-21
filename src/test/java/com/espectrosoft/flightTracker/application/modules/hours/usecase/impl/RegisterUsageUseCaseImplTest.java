@@ -4,7 +4,9 @@ import com.espectrosoft.flightTracker.application.dto.hours.RegisterUsageRequest
 import com.espectrosoft.flightTracker.application.dto.hours.RegisterUsageResponseDto;
 import com.espectrosoft.flightTracker.application.exception.types.BusinessException;
 import com.espectrosoft.flightTracker.application.exception.types.NotFoundException;
+import com.espectrosoft.flightTracker.application.modules.application.hours.usecase.impl.RegisterUsageUseCaseImpl;
 import com.espectrosoft.flightTracker.domain.model.*;
+import com.espectrosoft.flightTracker.domain.model.enums.AircraftType;
 import com.espectrosoft.flightTracker.domain.repository.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -36,7 +38,8 @@ class RegisterUsageUseCaseImplTest {
     @Mock
     private UserAircraftBalanceRepository balanceRepository;
 
-    private RegisterUsageUseCaseImpl useCase;
+    private RegisterUsageUseCaseImpl
+        useCase;
 
     @BeforeEach
     void setUp() {
@@ -57,7 +60,7 @@ class RegisterUsageUseCaseImplTest {
         final Academy academy = Academy.builder().id(1L).name("A").build();
         final User pilot = User.builder().id(10L).username("p1").academy(academy).fullName("P").password("x").build();
         final User instructor = User.builder().id(11L).username("i1").academy(academy).fullName("I").password("x").build();
-        final Aircraft aircraft = Aircraft.builder().id(100L).academy(academy).tailNumber("HK-1").model("M").type("SEL").build();
+        final Aircraft aircraft = Aircraft.builder().id(100L).academy(academy).registration("HK-1").model("M").type(AircraftType.AIRCRAFT).build();
         final User creator = User.builder().id(2L).username("admin").academy(academy).fullName("Admin").password("p").build();
         final UserAircraftBalance balance = UserAircraftBalance.builder()
                 .pilot(pilot).aircraft(aircraft).totalPurchased(5).totalUsed(1).balanceHours(4).build();
@@ -113,7 +116,7 @@ class RegisterUsageUseCaseImplTest {
         final Academy academy = Academy.builder().id(1L).name("A").build();
         final User pilot = User.builder().id(10L).username("p1").academy(academy).fullName("P").password("x").build();
         final User instructor = User.builder().id(11L).username("i1").academy(academy).fullName("I").password("x").build();
-        final Aircraft aircraft = Aircraft.builder().id(100L).academy(academy).tailNumber("HK-1").model("M").type("SEL").build();
+        final Aircraft aircraft = Aircraft.builder().id(100L).academy(academy).registration("HK-1").model("M").type(AircraftType.AIRCRAFT).build();
         final UserAircraftBalance balance = UserAircraftBalance.builder()
                 .pilot(pilot).aircraft(aircraft).totalPurchased(1).totalUsed(0).balanceHours(1).build();
         final RegisterUsageRequestDto req = new RegisterUsageRequestDto();

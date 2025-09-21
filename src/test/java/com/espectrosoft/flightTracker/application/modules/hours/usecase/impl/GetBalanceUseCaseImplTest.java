@@ -2,10 +2,12 @@ package com.espectrosoft.flightTracker.application.modules.hours.usecase.impl;
 
 import com.espectrosoft.flightTracker.application.dto.hours.UserAircraftBalanceDto;
 import com.espectrosoft.flightTracker.application.exception.types.NotFoundException;
+import com.espectrosoft.flightTracker.application.modules.application.hours.usecase.impl.GetBalanceUseCaseImpl;
 import com.espectrosoft.flightTracker.domain.model.Academy;
 import com.espectrosoft.flightTracker.domain.model.Aircraft;
 import com.espectrosoft.flightTracker.domain.model.User;
 import com.espectrosoft.flightTracker.domain.model.UserAircraftBalance;
+import com.espectrosoft.flightTracker.domain.model.enums.AircraftType;
 import com.espectrosoft.flightTracker.domain.repository.AircraftRepository;
 import com.espectrosoft.flightTracker.domain.repository.UserAircraftBalanceRepository;
 import com.espectrosoft.flightTracker.domain.repository.UserRepository;
@@ -30,7 +32,8 @@ class GetBalanceUseCaseImplTest {
     @Mock
     private UserAircraftBalanceRepository balanceRepository;
 
-    private GetBalanceUseCaseImpl useCase;
+    private GetBalanceUseCaseImpl
+        useCase;
 
     @BeforeEach
     void setUp() {
@@ -45,7 +48,7 @@ class GetBalanceUseCaseImplTest {
     void returns_existing_balance() {
         final Academy academy = Academy.builder().id(1L).name("A").build();
         final User pilot = User.builder().id(10L).username("p1").academy(academy).fullName("P").password("x").build();
-        final Aircraft aircraft = Aircraft.builder().id(100L).academy(academy).tailNumber("HK-1").model("M").type("SEL").build();
+        final Aircraft aircraft = Aircraft.builder().id(100L).academy(academy).registration("HK-1").model("M").type(AircraftType.AIRCRAFT).build();
         final UserAircraftBalance balance = UserAircraftBalance.builder()
                 .pilot(pilot).aircraft(aircraft).totalPurchased(5).totalUsed(2).balanceHours(3).build();
 
