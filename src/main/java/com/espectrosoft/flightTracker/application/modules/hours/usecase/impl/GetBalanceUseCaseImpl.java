@@ -2,7 +2,7 @@ package com.espectrosoft.flightTracker.application.modules.hours.usecase.impl;
 
 import com.espectrosoft.flightTracker.application.dto.hours.UserAircraftBalanceDto;
 import com.espectrosoft.flightTracker.application.exception.NotFoundException;
-import com.espectrosoft.flightTracker.application.core.policy.ModuleEnabledPolicy;
+import com.espectrosoft.flightTracker.application.core.policy.AccessValidationUseCase;
 import com.espectrosoft.flightTracker.application.modules.hours.usecase.GetBalanceUseCase;
 import com.espectrosoft.flightTracker.domain.model.Aircraft;
 import com.espectrosoft.flightTracker.domain.model.User;
@@ -23,7 +23,7 @@ public class GetBalanceUseCaseImpl implements GetBalanceUseCase {
     UserRepository userRepository;
     AircraftRepository aircraftRepository;
     UserAircraftBalanceRepository balanceRepository;
-    ModuleEnabledPolicy moduleEnabledPolicy;
+    AccessValidationUseCase accessValidationUseCase;
 
     @Override
     public UserAircraftBalanceDto apply(Long pilotId, Long aircraftId) {
@@ -31,7 +31,7 @@ public class GetBalanceUseCaseImpl implements GetBalanceUseCase {
                 .orElseThrow(() -> new NotFoundException("Pilot not found"));
         final Aircraft aircraft = aircraftRepository.findById(aircraftId)
                 .orElseThrow(() -> new NotFoundException("Aircraft not found"));
-        moduleEnabledPolicy.apply(aircraft.getAcademy(), ModuleCode.HOURS);
+        accessValidationUseCase.apply(aircraft.getAcademy(), ModuleCode.HOURS);
         return balanceRepository.findByPilotAndAircraft(pilot, aircraft)
                 .map(b -> new UserAircraftBalanceDto(pilot.getId(), aircraft.getId(), b.getTotalPurchased(), b.getTotalUsed(), b.getBalanceHours()))
                 .orElseGet(() -> new UserAircraftBalanceDto(pilot.getId(), aircraft.getId(), 0, 0, 0));

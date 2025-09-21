@@ -1,4 +1,4 @@
-package com.espectrosoft.flightTracker.application.core.policy;
+package com.espectrosoft.flightTracker.application.core.policy.validations;
 
 import com.espectrosoft.flightTracker.application.exception.ModuleDisabledException;
 import com.espectrosoft.flightTracker.domain.model.Academy;

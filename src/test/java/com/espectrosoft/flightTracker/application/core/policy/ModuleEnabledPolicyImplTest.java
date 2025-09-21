@@ -1,5 +1,6 @@
 package com.espectrosoft.flightTracker.application.core.policy;
 
+import com.espectrosoft.flightTracker.application.core.policy.validations.ModuleEnabledPolicyImpl;
 import com.espectrosoft.flightTracker.application.exception.ModuleDisabledException;
 import com.espectrosoft.flightTracker.domain.model.Academy;
 import com.espectrosoft.flightTracker.domain.model.AcademyModule;
@@ -25,7 +26,8 @@ class ModuleEnabledPolicyImplTest {
     @Mock
     private AcademyModuleRepository academyModuleRepository;
 
-    private ModuleEnabledPolicyImpl policy;
+    private ModuleEnabledPolicyImpl
+        policy;
 
     @BeforeEach
     void setUp() {

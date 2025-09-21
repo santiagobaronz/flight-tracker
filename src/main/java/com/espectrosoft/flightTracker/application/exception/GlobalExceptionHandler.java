@@ -89,6 +89,15 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.FORBIDDEN).body(body);
     }
 
+    @ExceptionHandler(AcademyInactiveException.class)
+    public ResponseEntity<Map<String, Object>> handleAcademyInactive(AcademyInactiveException ex) {
+        log.warn("Academy inactive: {}", ex.getMessage());
+        Map<String, Object> body = new HashMap<>();
+        body.put("status", HttpStatus.FORBIDDEN.value());
+        body.put("message", "Academy is inactive");
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(body);
+    }
+
     @ExceptionHandler(Exception.class)
     public ResponseEntity<Map<String, Object>> handleOther(Exception ex) {
         log.error("Unexpected error", ex);

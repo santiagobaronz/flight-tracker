@@ -4,7 +4,7 @@ import com.espectrosoft.flightTracker.application.dto.hours.RegisterUsageRequest
 import com.espectrosoft.flightTracker.application.dto.hours.RegisterUsageResponseDto;
 import com.espectrosoft.flightTracker.application.exception.BusinessException;
 import com.espectrosoft.flightTracker.application.exception.NotFoundException;
-import com.espectrosoft.flightTracker.application.core.policy.ModuleEnabledPolicy;
+import com.espectrosoft.flightTracker.application.core.policy.AccessValidationUseCase;
 import com.espectrosoft.flightTracker.application.modules.hours.usecase.RegisterUsageUseCase;
 import com.espectrosoft.flightTracker.application.util.SecurityUtil;
 import com.espectrosoft.flightTracker.domain.model.*;
@@ -27,13 +27,13 @@ public class RegisterUsageUseCaseImpl implements RegisterUsageUseCase {
     AircraftRepository aircraftRepository;
     HourUsageRepository hourUsageRepository;
     UserAircraftBalanceRepository balanceRepository;
-    ModuleEnabledPolicy moduleEnabledPolicy;
+    AccessValidationUseCase accessValidationUseCase;
 
     @Override
     public RegisterUsageResponseDto apply(RegisterUsageRequestDto request) {
         final Academy academy = academyRepository.findById(request.getAcademyId())
                 .orElseThrow(() -> new NotFoundException("Academy not found"));
-        moduleEnabledPolicy.apply(academy, ModuleCode.HOURS);
+        accessValidationUseCase.apply(academy, ModuleCode.HOURS);
 
         final User pilot = userRepository.findById(request.getPilotId())
                 .orElseThrow(() -> new NotFoundException("Pilot not found"));

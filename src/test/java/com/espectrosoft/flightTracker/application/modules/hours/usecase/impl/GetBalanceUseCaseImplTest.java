@@ -2,7 +2,7 @@ package com.espectrosoft.flightTracker.application.modules.hours.usecase.impl;
 
 import com.espectrosoft.flightTracker.application.dto.hours.UserAircraftBalanceDto;
 import com.espectrosoft.flightTracker.application.exception.NotFoundException;
-import com.espectrosoft.flightTracker.application.core.policy.ModuleEnabledPolicy;
+import com.espectrosoft.flightTracker.application.core.policy.AccessValidationUseCase;
 import com.espectrosoft.flightTracker.domain.model.Academy;
 import com.espectrosoft.flightTracker.domain.model.Aircraft;
 import com.espectrosoft.flightTracker.domain.model.User;
@@ -32,7 +32,7 @@ class GetBalanceUseCaseImplTest {
     @Mock
     private UserAircraftBalanceRepository balanceRepository;
     @Mock
-    private ModuleEnabledPolicy moduleEnabledPolicy;
+    private AccessValidationUseCase accessValidationUseCase;
 
     private GetBalanceUseCaseImpl useCase;
 
@@ -42,7 +42,7 @@ class GetBalanceUseCaseImplTest {
                 userRepository,
                 aircraftRepository,
                 balanceRepository,
-                moduleEnabledPolicy
+                accessValidationUseCase
         );
     }
 
@@ -56,7 +56,7 @@ class GetBalanceUseCaseImplTest {
 
         when(userRepository.findById(10L)).thenReturn(Optional.of(pilot));
         when(aircraftRepository.findById(100L)).thenReturn(Optional.of(aircraft));
-        doNothing().when(moduleEnabledPolicy).apply(academy, ModuleCode.HOURS);
+        doNothing().when(accessValidationUseCase).apply(academy, ModuleCode.HOURS);
         when(balanceRepository.findByPilotAndAircraft(pilot, aircraft)).thenReturn(Optional.of(balance));
 
         final UserAircraftBalanceDto dto = useCase.apply(10L, 100L);
@@ -70,7 +70,7 @@ class GetBalanceUseCaseImplTest {
 
         verify(userRepository).findById(10L);
         verify(aircraftRepository).findById(100L);
-        verify(moduleEnabledPolicy).apply(academy, ModuleCode.HOURS);
+        verify(accessValidationUseCase).apply(academy, ModuleCode.HOURS);
         verify(balanceRepository).findByPilotAndAircraft(pilot, aircraft);
     }
 

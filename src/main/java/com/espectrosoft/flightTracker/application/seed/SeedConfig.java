@@ -29,7 +29,11 @@ public class SeedConfig {
     ) {
         return args -> {
             final Academy academy = academyRepository.findById(1L).orElseGet(() -> {
-                final Academy a = Academy.builder().name("Espectro Academy").build();
+                final Academy a = Academy.builder()
+                        .name("Espectro Academy")
+                        .address("Default Address 123")
+                        .phoneNumber("+57 3000000000")
+                        .build();
                 return academyRepository.save(a);
             });
 

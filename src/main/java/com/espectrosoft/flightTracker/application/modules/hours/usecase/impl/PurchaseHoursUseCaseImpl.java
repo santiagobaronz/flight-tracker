@@ -2,7 +2,7 @@ package com.espectrosoft.flightTracker.application.modules.hours.usecase.impl;
 
 import com.espectrosoft.flightTracker.application.dto.hours.PurchaseHoursRequestDto;
 import com.espectrosoft.flightTracker.application.dto.hours.PurchaseHoursResponseDto;
-import com.espectrosoft.flightTracker.application.core.policy.ModuleEnabledPolicy;
+import com.espectrosoft.flightTracker.application.core.policy.AccessValidationUseCase;
 import com.espectrosoft.flightTracker.application.modules.hours.usecase.PurchaseHoursUseCase;
 import com.espectrosoft.flightTracker.application.exception.BusinessException;
 import com.espectrosoft.flightTracker.application.exception.NotFoundException;
@@ -28,13 +28,13 @@ public class PurchaseHoursUseCaseImpl implements PurchaseHoursUseCase {
     AircraftRepository aircraftRepository;
     HourPurchaseRepository hourPurchaseRepository;
     UserAircraftBalanceRepository balanceRepository;
-    ModuleEnabledPolicy moduleEnabledPolicy;
+    AccessValidationUseCase accessValidationUseCase;
 
     @Override
     public PurchaseHoursResponseDto apply(PurchaseHoursRequestDto request) {
         final Academy academy = academyRepository.findById(request.getAcademyId())
                 .orElseThrow(() -> new NotFoundException("Academy not found"));
-        moduleEnabledPolicy.apply(academy, ModuleCode.HOURS);
+        accessValidationUseCase.apply(academy, ModuleCode.HOURS);
 
         final User pilot = userRepository.findById(request.getPilotId())
                 .orElseThrow(() -> new NotFoundException("Pilot not found"));
