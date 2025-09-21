@@ -2,9 +2,8 @@ package com.espectrosoft.flightTracker.application.modules.modules.usecase.impl;
 
 import com.espectrosoft.flightTracker.application.dto.module.ModuleStatusDto;
 import com.espectrosoft.flightTracker.application.dto.module.ModuleToggleRequestDto;
-import com.espectrosoft.flightTracker.application.exception.NotFoundException;
+import com.espectrosoft.flightTracker.application.exception.types.NotFoundException;
 import com.espectrosoft.flightTracker.application.modules.modules.usecase.ToggleModuleUseCase;
-import com.espectrosoft.flightTracker.application.core.policy.validations.AcademyActivePolicy;
 import com.espectrosoft.flightTracker.domain.model.Academy;
 import com.espectrosoft.flightTracker.domain.model.AcademyModule;
 import com.espectrosoft.flightTracker.domain.repository.AcademyModuleRepository;
@@ -21,13 +20,11 @@ public class ToggleModuleUseCaseImpl implements ToggleModuleUseCase {
 
     AcademyRepository academyRepository;
     AcademyModuleRepository academyModuleRepository;
-    AcademyActivePolicy academyActivePolicy;
 
     @Override
     public ModuleStatusDto apply(ModuleToggleRequestDto request) {
         final Academy academy = academyRepository.findById(request.getAcademyId())
                 .orElseThrow(() -> new NotFoundException("Academy not found"));
-        academyActivePolicy.apply(academy);
         final AcademyModule am = academyModuleRepository.findByAcademyAndModuleCode(academy, request.getModuleCode())
                 .orElseGet(() -> AcademyModule.builder()
                         .academy(academy)

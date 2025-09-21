@@ -2,14 +2,11 @@ package com.espectrosoft.flightTracker.application.modules.hours.usecase.impl;
 
 import com.espectrosoft.flightTracker.application.dto.hours.RegisterUsageRequestDto;
 import com.espectrosoft.flightTracker.application.dto.hours.RegisterUsageResponseDto;
-import com.espectrosoft.flightTracker.application.exception.BusinessException;
-import com.espectrosoft.flightTracker.application.exception.NotFoundException;
-import com.espectrosoft.flightTracker.application.core.policy.AccessValidationUseCase;
-import com.espectrosoft.flightTracker.application.core.policy.validations.UserActivePolicy;
+import com.espectrosoft.flightTracker.application.exception.types.BusinessException;
+import com.espectrosoft.flightTracker.application.exception.types.NotFoundException;
 import com.espectrosoft.flightTracker.application.modules.hours.usecase.RegisterUsageUseCase;
 import com.espectrosoft.flightTracker.application.util.SecurityUtil;
 import com.espectrosoft.flightTracker.domain.model.*;
-import com.espectrosoft.flightTracker.domain.model.enums.ModuleCode;
 import com.espectrosoft.flightTracker.domain.repository.*;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -28,14 +25,11 @@ public class RegisterUsageUseCaseImpl implements RegisterUsageUseCase {
     AircraftRepository aircraftRepository;
     HourUsageRepository hourUsageRepository;
     UserAircraftBalanceRepository balanceRepository;
-    AccessValidationUseCase accessValidationUseCase;
-    UserActivePolicy userActivePolicy;
 
     @Override
     public RegisterUsageResponseDto apply(RegisterUsageRequestDto request) {
         final Academy academy = academyRepository.findById(request.getAcademyId())
                 .orElseThrow(() -> new NotFoundException("Academy not found"));
-        accessValidationUseCase.apply(academy, ModuleCode.HOURS);
 
         final User pilot = userRepository.findById(request.getPilotId())
                 .orElseThrow(() -> new NotFoundException("Pilot not found"));
@@ -64,7 +58,6 @@ public class RegisterUsageUseCaseImpl implements RegisterUsageUseCase {
         final String currentUsername = SecurityUtil.currentUsername();
         final User createdBy = userRepository.findByUsername(currentUsername)
                 .orElseThrow(() -> new NotFoundException("Creator user not found"));
-        userActivePolicy.apply(createdBy);
 
         final HourUsage usage = HourUsage.builder()
                 .academy(academy)

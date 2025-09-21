@@ -1,13 +1,11 @@
 package com.espectrosoft.flightTracker.application.modules.hours.usecase.impl;
 
 import com.espectrosoft.flightTracker.application.dto.hours.UserAircraftBalanceDto;
-import com.espectrosoft.flightTracker.application.exception.NotFoundException;
-import com.espectrosoft.flightTracker.application.core.policy.AccessValidationUseCase;
+import com.espectrosoft.flightTracker.application.exception.types.NotFoundException;
 import com.espectrosoft.flightTracker.domain.model.Academy;
 import com.espectrosoft.flightTracker.domain.model.Aircraft;
 import com.espectrosoft.flightTracker.domain.model.User;
 import com.espectrosoft.flightTracker.domain.model.UserAircraftBalance;
-import com.espectrosoft.flightTracker.domain.model.enums.ModuleCode;
 import com.espectrosoft.flightTracker.domain.repository.AircraftRepository;
 import com.espectrosoft.flightTracker.domain.repository.UserAircraftBalanceRepository;
 import com.espectrosoft.flightTracker.domain.repository.UserRepository;
@@ -31,8 +29,6 @@ class GetBalanceUseCaseImplTest {
     private AircraftRepository aircraftRepository;
     @Mock
     private UserAircraftBalanceRepository balanceRepository;
-    @Mock
-    private AccessValidationUseCase accessValidationUseCase;
 
     private GetBalanceUseCaseImpl useCase;
 
@@ -41,8 +37,7 @@ class GetBalanceUseCaseImplTest {
         useCase = new GetBalanceUseCaseImpl(
                 userRepository,
                 aircraftRepository,
-                balanceRepository,
-                accessValidationUseCase
+                balanceRepository
         );
     }
 
@@ -56,7 +51,6 @@ class GetBalanceUseCaseImplTest {
 
         when(userRepository.findById(10L)).thenReturn(Optional.of(pilot));
         when(aircraftRepository.findById(100L)).thenReturn(Optional.of(aircraft));
-        doNothing().when(accessValidationUseCase).apply(academy, ModuleCode.HOURS);
         when(balanceRepository.findByPilotAndAircraft(pilot, aircraft)).thenReturn(Optional.of(balance));
 
         final UserAircraftBalanceDto dto = useCase.apply(10L, 100L);
@@ -70,7 +64,6 @@ class GetBalanceUseCaseImplTest {
 
         verify(userRepository).findById(10L);
         verify(aircraftRepository).findById(100L);
-        verify(accessValidationUseCase).apply(academy, ModuleCode.HOURS);
         verify(balanceRepository).findByPilotAndAircraft(pilot, aircraft);
     }
 

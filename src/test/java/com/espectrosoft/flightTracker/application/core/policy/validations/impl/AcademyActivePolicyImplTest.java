@@ -1,7 +1,6 @@
-package com.espectrosoft.flightTracker.application.core.policy;
+package com.espectrosoft.flightTracker.application.core.policy.validations.impl;
 
-import com.espectrosoft.flightTracker.application.core.policy.validations.AcademyActivePolicyImpl;
-import com.espectrosoft.flightTracker.application.exception.AcademyInactiveException;
+import com.espectrosoft.flightTracker.application.exception.types.AcademyInactiveException;
 import com.espectrosoft.flightTracker.domain.model.Academy;
 import org.junit.jupiter.api.Test;
 

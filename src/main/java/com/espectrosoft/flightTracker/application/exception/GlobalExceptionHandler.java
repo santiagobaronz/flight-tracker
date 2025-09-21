@@ -1,5 +1,10 @@
 package com.espectrosoft.flightTracker.application.exception;
 
+import com.espectrosoft.flightTracker.application.exception.types.AcademyInactiveException;
+import com.espectrosoft.flightTracker.application.exception.types.BusinessException;
+import com.espectrosoft.flightTracker.application.exception.types.ModuleDisabledException;
+import com.espectrosoft.flightTracker.application.exception.types.NotFoundException;
+import com.espectrosoft.flightTracker.application.exception.types.UserInactiveException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;

@@ -2,12 +2,9 @@ package com.espectrosoft.flightTracker.application.modules.hours.usecase.impl;
 
 import com.espectrosoft.flightTracker.application.dto.hours.RegisterUsageRequestDto;
 import com.espectrosoft.flightTracker.application.dto.hours.RegisterUsageResponseDto;
-import com.espectrosoft.flightTracker.application.exception.BusinessException;
-import com.espectrosoft.flightTracker.application.exception.NotFoundException;
-import com.espectrosoft.flightTracker.application.core.policy.AccessValidationUseCase;
-import com.espectrosoft.flightTracker.application.core.policy.validations.UserActivePolicy;
+import com.espectrosoft.flightTracker.application.exception.types.BusinessException;
+import com.espectrosoft.flightTracker.application.exception.types.NotFoundException;
 import com.espectrosoft.flightTracker.domain.model.*;
-import com.espectrosoft.flightTracker.domain.model.enums.ModuleCode;
 import com.espectrosoft.flightTracker.domain.repository.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -38,10 +35,6 @@ class RegisterUsageUseCaseImplTest {
     private HourUsageRepository hourUsageRepository;
     @Mock
     private UserAircraftBalanceRepository balanceRepository;
-    @Mock
-    private AccessValidationUseCase accessValidationUseCase;
-    @Mock
-    private UserActivePolicy userActivePolicy;
 
     private RegisterUsageUseCaseImpl useCase;
 
@@ -52,9 +45,7 @@ class RegisterUsageUseCaseImplTest {
                 userRepository,
                 aircraftRepository,
                 hourUsageRepository,
-                balanceRepository,
-                accessValidationUseCase,
-                userActivePolicy
+                balanceRepository
         );
         final SecurityContext context = SecurityContextHolder.createEmptyContext();
         context.setAuthentication(new UsernamePasswordAuthenticationToken("admin", ""));
@@ -80,13 +71,11 @@ class RegisterUsageUseCaseImplTest {
         req.setLogbookNumber("L-1");
 
         when(academyRepository.findById(1L)).thenReturn(Optional.of(academy));
-        doNothing().when(accessValidationUseCase).apply(academy, ModuleCode.HOURS);
         when(userRepository.findById(10L)).thenReturn(Optional.of(pilot));
         when(userRepository.findById(11L)).thenReturn(Optional.of(instructor));
         when(aircraftRepository.findById(100L)).thenReturn(Optional.of(aircraft));
         when(balanceRepository.findByPilotAndAircraft(pilot, aircraft)).thenReturn(Optional.of(balance));
         when(userRepository.findByUsername("admin")).thenReturn(Optional.of(creator));
-        doNothing().when(userActivePolicy).apply(creator);
         when(hourUsageRepository.save(any(HourUsage.class))).thenAnswer(inv -> {
             final HourUsage u = inv.getArgument(0, HourUsage.class);
             return HourUsage.builder()
@@ -110,13 +99,11 @@ class RegisterUsageUseCaseImplTest {
         assertEquals(2.0, dto.getBalanceHours());
 
         verify(academyRepository).findById(1L);
-        verify(accessValidationUseCase).apply(academy, ModuleCode.HOURS);
         verify(userRepository).findById(10L);
         verify(userRepository).findById(11L);
         verify(aircraftRepository).findById(100L);
         verify(balanceRepository).findByPilotAndAircraft(pilot, aircraft);
         verify(userRepository).findByUsername("admin");
-        verify(userActivePolicy).apply(creator);
         verify(hourUsageRepository).save(any(HourUsage.class));
         verify(balanceRepository).save(any(UserAircraftBalance.class));
     }
@@ -139,7 +126,6 @@ class RegisterUsageUseCaseImplTest {
         req.setLogbookNumber("L-1");
 
         when(academyRepository.findById(1L)).thenReturn(Optional.of(academy));
-        doNothing().when(accessValidationUseCase).apply(academy, ModuleCode.HOURS);
         when(userRepository.findById(10L)).thenReturn(Optional.of(pilot));
         when(userRepository.findById(11L)).thenReturn(Optional.of(instructor));
         when(aircraftRepository.findById(100L)).thenReturn(Optional.of(aircraft));
@@ -148,7 +134,6 @@ class RegisterUsageUseCaseImplTest {
         assertThrows(BusinessException.class, () -> useCase.apply(req));
 
         verify(academyRepository).findById(1L);
-        verify(accessValidationUseCase).apply(academy, ModuleCode.HOURS);
         verify(userRepository).findById(10L);
         verify(userRepository).findById(11L);
         verify(aircraftRepository).findById(100L);

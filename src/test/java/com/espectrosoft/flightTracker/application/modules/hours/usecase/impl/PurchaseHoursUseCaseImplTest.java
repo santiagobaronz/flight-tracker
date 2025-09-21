@@ -2,12 +2,9 @@ package com.espectrosoft.flightTracker.application.modules.hours.usecase.impl;
 
 import com.espectrosoft.flightTracker.application.dto.hours.PurchaseHoursRequestDto;
 import com.espectrosoft.flightTracker.application.dto.hours.PurchaseHoursResponseDto;
-import com.espectrosoft.flightTracker.application.exception.BusinessException;
-import com.espectrosoft.flightTracker.application.exception.NotFoundException;
-import com.espectrosoft.flightTracker.application.core.policy.AccessValidationUseCase;
-import com.espectrosoft.flightTracker.application.core.policy.validations.UserActivePolicy;
+import com.espectrosoft.flightTracker.application.exception.types.BusinessException;
+import com.espectrosoft.flightTracker.application.exception.types.NotFoundException;
 import com.espectrosoft.flightTracker.domain.model.*;
-import com.espectrosoft.flightTracker.domain.model.enums.ModuleCode;
 import com.espectrosoft.flightTracker.domain.repository.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -39,10 +36,6 @@ class PurchaseHoursUseCaseImplTest {
     private HourPurchaseRepository hourPurchaseRepository;
     @Mock
     private UserAircraftBalanceRepository balanceRepository;
-    @Mock
-    private AccessValidationUseCase accessValidationUseCase;
-    @Mock
-    private UserActivePolicy userActivePolicy;
 
     private PurchaseHoursUseCaseImpl useCase;
 
@@ -53,9 +46,7 @@ class PurchaseHoursUseCaseImplTest {
                 userRepository,
                 aircraftRepository,
                 hourPurchaseRepository,
-                balanceRepository,
-                accessValidationUseCase,
-                userActivePolicy
+                balanceRepository
         );
         final SecurityContext context = SecurityContextHolder.createEmptyContext();
         context.setAuthentication(new UsernamePasswordAuthenticationToken("admin", ""));
@@ -77,13 +68,11 @@ class PurchaseHoursUseCaseImplTest {
         req.setPurchaseDate(LocalDate.now());
 
         when(academyRepository.findById(1L)).thenReturn(Optional.of(academy));
-        doNothing().when(accessValidationUseCase).apply(academy, ModuleCode.HOURS);
         when(userRepository.findById(10L)).thenReturn(Optional.of(pilot));
         when(aircraftRepository.findById(100L)).thenReturn(Optional.of(aircraft));
         when(hourPurchaseRepository.existsByReceiptNumberAndAircraft("R-1", aircraft)).thenReturn(false);
         when(hourPurchaseRepository.findByAcademyAndReceiptNumber(academy, "R-1")).thenReturn(List.of());
         when(userRepository.findByUsername("admin")).thenReturn(Optional.of(creator));
-        doNothing().when(userActivePolicy).apply(eq(creator));
         when(hourPurchaseRepository.save(any(HourPurchase.class))).thenAnswer(inv -> {
             final HourPurchase p = inv.getArgument(0, HourPurchase.class);
             return HourPurchase.builder()
@@ -107,13 +96,11 @@ class PurchaseHoursUseCaseImplTest {
         assertEquals(2.0, dto.getBalanceHours());
 
         verify(academyRepository).findById(1L);
-        verify(accessValidationUseCase).apply(academy, ModuleCode.HOURS);
         verify(userRepository).findById(10L);
         verify(aircraftRepository).findById(100L);
         verify(hourPurchaseRepository).existsByReceiptNumberAndAircraft("R-1", aircraft);
         verify(hourPurchaseRepository).findByAcademyAndReceiptNumber(academy, "R-1");
         verify(userRepository).findByUsername("admin");
-        verify(userActivePolicy).apply(eq(creator));
         verify(hourPurchaseRepository).save(any(HourPurchase.class));
         verify(balanceRepository).findByPilotAndAircraft(pilot, aircraft);
         verify(balanceRepository).save(any(UserAircraftBalance.class));
@@ -133,7 +120,6 @@ class PurchaseHoursUseCaseImplTest {
         req.setPurchaseDate(LocalDate.now());
 
         when(academyRepository.findById(1L)).thenReturn(Optional.of(academy));
-        doNothing().when(accessValidationUseCase).apply(academy, ModuleCode.HOURS);
         when(userRepository.findById(10L)).thenReturn(Optional.of(pilot));
         when(aircraftRepository.findById(100L)).thenReturn(Optional.of(aircraft));
         when(hourPurchaseRepository.existsByReceiptNumberAndAircraft("R-1", aircraft)).thenReturn(true);
@@ -141,7 +127,6 @@ class PurchaseHoursUseCaseImplTest {
         assertThrows(BusinessException.class, () -> useCase.apply(req));
 
         verify(academyRepository).findById(1L);
-        verify(accessValidationUseCase).apply(academy, ModuleCode.HOURS);
         verify(userRepository).findById(10L);
         verify(aircraftRepository).findById(100L);
         verify(hourPurchaseRepository).existsByReceiptNumberAndAircraft("R-1", aircraft);
@@ -163,7 +148,6 @@ class PurchaseHoursUseCaseImplTest {
         req.setPurchaseDate(LocalDate.now());
 
         when(academyRepository.findById(1L)).thenReturn(Optional.of(academy));
-        doNothing().when(accessValidationUseCase).apply(academy, ModuleCode.HOURS);
         when(userRepository.findById(10L)).thenReturn(Optional.of(pilot));
         when(aircraftRepository.findById(100L)).thenReturn(Optional.of(aircraft));
         when(hourPurchaseRepository.existsByReceiptNumberAndAircraft("R-1", aircraft)).thenReturn(false);
@@ -172,7 +156,6 @@ class PurchaseHoursUseCaseImplTest {
         assertThrows(BusinessException.class, () -> useCase.apply(req));
 
         verify(academyRepository).findById(1L);
-        verify(accessValidationUseCase).apply(academy, ModuleCode.HOURS);
         verify(userRepository).findById(10L);
         verify(aircraftRepository).findById(100L);
         verify(hourPurchaseRepository).findByAcademyAndReceiptNumber(academy, "R-1");

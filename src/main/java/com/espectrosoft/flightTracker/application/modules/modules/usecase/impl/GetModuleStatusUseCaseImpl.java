@@ -1,7 +1,7 @@
 package com.espectrosoft.flightTracker.application.modules.modules.usecase.impl;
 
 import com.espectrosoft.flightTracker.application.dto.module.ModuleStatusDto;
-import com.espectrosoft.flightTracker.application.exception.NotFoundException;
+import com.espectrosoft.flightTracker.application.exception.types.NotFoundException;
 import com.espectrosoft.flightTracker.application.modules.modules.usecase.GetModuleStatusUseCase;
 import com.espectrosoft.flightTracker.domain.model.Academy;
 import com.espectrosoft.flightTracker.domain.model.enums.ModuleCode;

@@ -1,6 +1,7 @@
-package com.espectrosoft.flightTracker.application.core.policy.validations;
+package com.espectrosoft.flightTracker.application.core.policy.validations.impl;
 
-import com.espectrosoft.flightTracker.application.exception.AcademyInactiveException;
+import com.espectrosoft.flightTracker.application.core.policy.validations.AcademyActivePolicy;
+import com.espectrosoft.flightTracker.application.exception.types.AcademyInactiveException;
 import com.espectrosoft.flightTracker.domain.model.Academy;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
