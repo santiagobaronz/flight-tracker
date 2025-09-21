@@ -1,5 +1,7 @@
 package com.espectrosoft.flightTracker.application.core.policy.validations.impl;
 
+import static com.espectrosoft.flightTracker.application.core.policy.constants.PolicyConstants.MODULE_DISABLED;
+
 import com.espectrosoft.flightTracker.application.core.policy.validations.ModuleEnabledPolicy;
 import com.espectrosoft.flightTracker.application.exception.types.ModuleDisabledException;
 import com.espectrosoft.flightTracker.domain.model.Academy;
@@ -23,6 +25,6 @@ public class ModuleEnabledPolicyImpl implements ModuleEnabledPolicy {
     public void apply(Academy academy, ModuleSection section, ModuleCode module) {
         academyModuleRepository.findByAcademyAndModuleCode(academy, module)
                 .filter(AcademyModule::isActive)
-                .orElseThrow(() -> new ModuleDisabledException("Module is disabled for this academy"));
+                .orElseThrow(() -> new ModuleDisabledException(MODULE_DISABLED));
     }
 }

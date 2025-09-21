@@ -13,8 +13,7 @@ import org.springframework.stereotype.Component;
 @FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
 public class PublicAccessPolicyImpl implements PublicAccessPolicy {
 
-    AcademyActivePolicy
-        academyActivePolicy;
+    AcademyActivePolicy academyActivePolicy;
 
     @Override
     public void validate(Academy academy) {

@@ -26,6 +26,9 @@ import java.util.Map;
 public class GlobalExceptionHandler {
 
     private static final Logger log = LoggerFactory.getLogger(GlobalExceptionHandler.class);
+    private static final String STATUS = "status";
+    private static final String MESSAGE = "message";
+    private static final String ERRORS = "errors";
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<Map<String, Object>> handleValidation(MethodArgumentNotValidException ex) {
@@ -35,8 +38,8 @@ public class GlobalExceptionHandler {
         for (FieldError fe : ex.getBindingResult().getFieldErrors()) {
             errors.put(fe.getField(), fe.getDefaultMessage());
         }
-        body.put("status", HttpStatus.BAD_REQUEST.value());
-        body.put("errors", errors);
+        body.put(STATUS, HttpStatus.BAD_REQUEST.value());
+        body.put(ERRORS, errors);
         return ResponseEntity.badRequest().body(body);
     }
 
@@ -44,8 +47,8 @@ public class GlobalExceptionHandler {
     public ResponseEntity<Map<String, Object>> handleNotFound(NotFoundException ex) {
         log.warn("Not found: {}", ex.getMessage());
         Map<String, Object> body = new HashMap<>();
-        body.put("status", HttpStatus.NOT_FOUND.value());
-        body.put("message", ex.getMessage());
+        body.put(STATUS, HttpStatus.NOT_FOUND.value());
+        body.put(MESSAGE, ex.getMessage());
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(body);
     }
 
@@ -53,8 +56,8 @@ public class GlobalExceptionHandler {
     public ResponseEntity<Map<String, Object>> handleBusiness(BusinessException ex) {
         log.warn("Business error: {}", ex.getMessage());
         Map<String, Object> body = new HashMap<>();
-        body.put("status", HttpStatus.UNPROCESSABLE_ENTITY.value());
-        body.put("message", ex.getMessage());
+        body.put(STATUS, HttpStatus.UNPROCESSABLE_ENTITY.value());
+        body.put(MESSAGE, ex.getMessage());
         return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY).body(body);
     }
 
@@ -62,8 +65,8 @@ public class GlobalExceptionHandler {
     public ResponseEntity<Map<String, Object>> handleBadCredentials(RuntimeException ex) {
         log.warn("Authentication failed: {}", ex.getMessage());
         Map<String, Object> body = new HashMap<>();
-        body.put("status", HttpStatus.UNAUTHORIZED.value());
-        body.put("message", "Invalid credentials");
+        body.put(STATUS, HttpStatus.UNAUTHORIZED.value());
+        body.put(MESSAGE, "Invalid credentials");
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(body);
     }
 
@@ -71,8 +74,8 @@ public class GlobalExceptionHandler {
     public ResponseEntity<Map<String, Object>> handleAuth(AuthenticationException ex) {
         log.warn("Authentication exception: {}", ex.getMessage());
         Map<String, Object> body = new HashMap<>();
-        body.put("status", HttpStatus.UNAUTHORIZED.value());
-        body.put("message", "Authentication failed");
+        body.put(STATUS, HttpStatus.UNAUTHORIZED.value());
+        body.put(MESSAGE, "Authentication failed");
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(body);
     }
 
@@ -80,8 +83,8 @@ public class GlobalExceptionHandler {
     public ResponseEntity<Map<String, Object>> handleAccessDenied(Exception ex) {
         log.warn("Access denied: {}", ex.getMessage());
         Map<String, Object> body = new HashMap<>();
-        body.put("status", HttpStatus.FORBIDDEN.value());
-        body.put("message", "Access denied");
+        body.put(STATUS, HttpStatus.FORBIDDEN.value());
+        body.put(MESSAGE, "Access denied");
         return ResponseEntity.status(HttpStatus.FORBIDDEN).body(body);
     }
 
@@ -89,8 +92,8 @@ public class GlobalExceptionHandler {
     public ResponseEntity<Map<String, Object>> handleModuleDisabled(ModuleDisabledException ex) {
         log.warn("Module disabled: {}", ex.getMessage());
         Map<String, Object> body = new HashMap<>();
-        body.put("status", HttpStatus.FORBIDDEN.value());
-        body.put("message", "Module or content is not accessible");
+        body.put(STATUS, HttpStatus.FORBIDDEN.value());
+        body.put(MESSAGE, "Module or content is not accessible");
         return ResponseEntity.status(HttpStatus.FORBIDDEN).body(body);
     }
 
@@ -98,8 +101,8 @@ public class GlobalExceptionHandler {
     public ResponseEntity<Map<String, Object>> handleAcademyInactive(AcademyInactiveException ex) {
         log.warn("Academy inactive: {}", ex.getMessage());
         Map<String, Object> body = new HashMap<>();
-        body.put("status", HttpStatus.FORBIDDEN.value());
-        body.put("message", "Academy is inactive");
+        body.put(STATUS, HttpStatus.FORBIDDEN.value());
+        body.put(MESSAGE, "Academy is inactive");
         return ResponseEntity.status(HttpStatus.FORBIDDEN).body(body);
     }
 
@@ -107,8 +110,8 @@ public class GlobalExceptionHandler {
     public ResponseEntity<Map<String, Object>> handleUserInactive(UserInactiveException ex) {
         log.warn("User inactive: {}", ex.getMessage());
         Map<String, Object> body = new HashMap<>();
-        body.put("status", HttpStatus.FORBIDDEN.value());
-        body.put("message", "User is inactive");
+        body.put(STATUS, HttpStatus.FORBIDDEN.value());
+        body.put(MESSAGE, "User is inactive");
         return ResponseEntity.status(HttpStatus.FORBIDDEN).body(body);
     }
 
@@ -116,8 +119,8 @@ public class GlobalExceptionHandler {
     public ResponseEntity<Map<String, Object>> handleOther(Exception ex) {
         log.error("Unexpected error", ex);
         Map<String, Object> body = new HashMap<>();
-        body.put("status", HttpStatus.INTERNAL_SERVER_ERROR.value());
-        body.put("message", "Unexpected error");
+        body.put(STATUS, HttpStatus.INTERNAL_SERVER_ERROR.value());
+        body.put(MESSAGE, "Unexpected error");
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(body);
     }
 }

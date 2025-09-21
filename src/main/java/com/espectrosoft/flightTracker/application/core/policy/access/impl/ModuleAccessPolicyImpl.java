@@ -1,5 +1,7 @@
 package com.espectrosoft.flightTracker.application.core.policy.access.impl;
 
+import static com.espectrosoft.flightTracker.application.core.policy.constants.PolicyConstants.INSUFFICIENT_PERMISSIONS;
+
 import com.espectrosoft.flightTracker.application.core.policy.access.ModuleAccessPolicy;
 import com.espectrosoft.flightTracker.application.core.policy.validations.AcademyActivePolicy;
 import com.espectrosoft.flightTracker.application.core.policy.validations.ModuleEnabledPolicy;
@@ -21,12 +23,9 @@ import org.springframework.stereotype.Component;
 @FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
 public class ModuleAccessPolicyImpl implements ModuleAccessPolicy {
 
-    AcademyActivePolicy
-        academyActivePolicy;
-    UserActivePolicy
-        userActivePolicy;
-    ModuleEnabledPolicy
-        moduleEnabledPolicy;
+    AcademyActivePolicy academyActivePolicy;
+    UserActivePolicy userActivePolicy;
+    ModuleEnabledPolicy moduleEnabledPolicy;
     RolePermissionRepository rolePermissionRepository;
 
     @Override
@@ -36,7 +35,7 @@ public class ModuleAccessPolicyImpl implements ModuleAccessPolicy {
         moduleEnabledPolicy.apply(academy, section, moduleCode);
         final boolean hasPermission = rolePermissionRepository.existsByUserIdAndModuleCodeAndAction(user.getId(), moduleCode, action);
         if (!hasPermission) {
-            throw new BusinessException("Insufficient permissions");
+            throw new BusinessException(INSUFFICIENT_PERMISSIONS);
         }
     }
 }

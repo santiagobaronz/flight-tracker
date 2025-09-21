@@ -15,8 +15,7 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/api/hours")
 public class HoursController {
 
-    private final HoursService
-        hoursService;
+    private final HoursService hoursService;
 
     public HoursController(HoursService hoursService) {
         this.hoursService =
@@ -24,19 +23,19 @@ public class HoursController {
     }
 
     @PostMapping("/purchase")
-    @PreAuthorize("hasAuthority('HOURS_CREATE')")
+    @PreAuthorize("isAuthenticated()")
     public ResponseEntity<PurchaseHoursResponseDto> purchase(@Valid @RequestBody PurchaseHoursRequestDto request) {
         return ResponseEntity.ok(hoursService.purchaseHours(request));
     }
 
     @PostMapping("/usage")
-    @PreAuthorize("hasAuthority('HOURS_EDIT')")
+    @PreAuthorize("isAuthenticated()")
     public ResponseEntity<RegisterUsageResponseDto> registerUsage(@Valid @RequestBody RegisterUsageRequestDto request) {
         return ResponseEntity.ok(hoursService.registerUsage(request));
     }
 
     @GetMapping("/balance")
-    @PreAuthorize("hasAuthority('HOURS_VIEW')")
+    @PreAuthorize("isAuthenticated()")
     public ResponseEntity<UserAircraftBalanceDto> getBalance(@RequestParam Long pilotId, @RequestParam Long aircraftId) {
         return ResponseEntity.ok(hoursService.getBalance(pilotId, aircraftId));
     }

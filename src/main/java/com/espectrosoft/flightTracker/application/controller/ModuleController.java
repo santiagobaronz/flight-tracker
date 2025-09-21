@@ -15,8 +15,7 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/api/modules")
 public class ModuleController {
 
-    private final ModuleService
-        moduleService;
+    private final ModuleService moduleService;
 
     public ModuleController(ModuleService moduleService) {
         this.moduleService =

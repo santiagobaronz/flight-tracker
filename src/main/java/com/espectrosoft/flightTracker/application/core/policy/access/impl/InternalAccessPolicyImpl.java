@@ -15,10 +15,8 @@ import org.springframework.stereotype.Component;
 @FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
 public class InternalAccessPolicyImpl implements InternalAccessPolicy {
 
-    AcademyActivePolicy
-        academyActivePolicy;
-    UserActivePolicy
-        userActivePolicy;
+    AcademyActivePolicy academyActivePolicy;
+    UserActivePolicy userActivePolicy;
 
     @Override
     public void validate(Academy academy, User user) {
