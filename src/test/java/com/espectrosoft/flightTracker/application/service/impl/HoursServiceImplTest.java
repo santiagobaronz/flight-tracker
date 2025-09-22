@@ -103,7 +103,7 @@ class HoursServiceImplTest {
         final UserAircraftBalanceDto res = service.getBalance(10L, 100L);
 
         assertNotNull(res);
-        assertEquals(10L, res.getPilotId());
+        assertEquals(10L, res.getClientId());
         assertEquals(100L, res.getAircraftId());
         assertEquals(5.0, res.getTotalPurchased());
         assertEquals(2.0, res.getTotalUsed());

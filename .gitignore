@@ -34,3 +34,6 @@ build/
 
 # Local migration helper script (ignored)
 migrate.sh
+
+# Local permissions config (ignored)
+permissions.yml

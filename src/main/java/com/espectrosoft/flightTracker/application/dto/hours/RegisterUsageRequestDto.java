@@ -14,7 +14,7 @@ public class RegisterUsageRequestDto {
     @NotNull
     private Long academyId;
     @NotNull
-    private Long pilotId;
+    private Long clientId;
     @NotNull
     private Long aircraftId;
     @NotNull

@@ -26,6 +26,9 @@ public class SeedConfig {
             UserRepository userRepository,
             AircraftRepository aircraftRepository,
             AcademyModuleRepository academyModuleRepository,
+            HourPurchaseRepository hourPurchaseRepository,
+            HourUsageRepository hourUsageRepository,
+            UserAircraftBalanceRepository balanceRepository,
             PasswordEncoder passwordEncoder
     ) {
         return args -> {
@@ -38,13 +41,24 @@ public class SeedConfig {
                 return academyRepository.save(a);
             });
 
-            final Role adminRole = roleRepository.findByName("ADMIN").orElseGet(() -> roleRepository.save(Role.builder().name("ADMIN").description("Administrador").build()));
-            final Role instrRole = roleRepository.findByName("INSTRUCTOR").orElseGet(() -> roleRepository.save(Role.builder().name("INSTRUCTOR").description("Instructor").build()));
-            final Role pilotRole = roleRepository.findByName("PILOT").orElseGet(() -> roleRepository.save(Role.builder().name("PILOT").description("Piloto").build()));
+            final Role adminRole = roleRepository.findByName("ADMINISTRATOR").orElseGet(() -> roleRepository.save(Role.builder().name("ADMINISTRATOR").description("Administrators").build()));
+            final Role employeeRole = roleRepository.findByName("EMPLOYEE").orElseGet(() -> roleRepository.save(Role.builder().name("EMPLOYEE").description("Employees").build()));
+            final Role instrRole = roleRepository.findByName("INSTRUCTOR").orElseGet(() -> roleRepository.save(Role.builder().name("INSTRUCTOR").description("Instructors").build()));
+            final Role clientRole = roleRepository.findByName("CLIENT").orElseGet(() -> roleRepository.save(Role.builder().name("CLIENT").description("Clients").build()));
 
-            ensurePermissions(rolePermissionRepository, adminRole, EnumSet.allOf(PermissionAction.class));
-            ensurePermissions(rolePermissionRepository, instrRole, EnumSet.of(PermissionAction.VIEW, PermissionAction.EDIT));
-            ensurePermissions(rolePermissionRepository, pilotRole, EnumSet.of(PermissionAction.VIEW));
+            // ADMINISTRATOR: HOURS [VIEW, CREATE, EDIT, DELETE]; AIRCRAFT [VIEW, CREATE, EDIT, DELETE]
+            ensurePermissions(rolePermissionRepository, adminRole, ModuleCode.HOURS, EnumSet.of(PermissionAction.VIEW, PermissionAction.CREATE, PermissionAction.EDIT, PermissionAction.DELETE));
+            ensurePermissions(rolePermissionRepository, adminRole, ModuleCode.AIRCRAFT, EnumSet.of(PermissionAction.VIEW, PermissionAction.CREATE, PermissionAction.EDIT, PermissionAction.DELETE));
+
+            // EMPLOYEE: HOURS [VIEW, CREATE, EDIT]; AIRCRAFT [VIEW]
+            ensurePermissions(rolePermissionRepository, employeeRole, ModuleCode.HOURS, EnumSet.of(PermissionAction.VIEW, PermissionAction.CREATE, PermissionAction.EDIT));
+            ensurePermissions(rolePermissionRepository, employeeRole, ModuleCode.AIRCRAFT, EnumSet.of(PermissionAction.VIEW));
+
+            // INSTRUCTOR: HOURS [VIEW, CREATE, EDIT]
+            ensurePermissions(rolePermissionRepository, instrRole, ModuleCode.HOURS, EnumSet.of(PermissionAction.VIEW, PermissionAction.CREATE, PermissionAction.EDIT));
+
+            // CLIENT: HOURS [VIEW]
+            ensurePermissions(rolePermissionRepository, clientRole, ModuleCode.HOURS, EnumSet.of(PermissionAction.VIEW));
 
             final User admin = userRepository.findByUsername("admin").orElseGet(() -> {
                 final User u = User.builder()
@@ -68,14 +82,25 @@ public class SeedConfig {
                 return userRepository.save(u);
             });
 
-            final User pilot = userRepository.findByUsername("pilot1").orElseGet(() -> {
+            userRepository.findByUsername("employee1").orElseGet(() -> {
                 final User u = User.builder()
-                        .username("pilot1")
-                        .password(passwordEncoder.encode("pilot123"))
-                        .fullName("Piloto Uno")
+                        .username("employee1")
+                        .password(passwordEncoder.encode("employee123"))
+                        .fullName("Employee Uno")
                         .academy(academy)
                         .build();
-                u.getRoles().add(pilotRole);
+                u.getRoles().add(employeeRole);
+                return userRepository.save(u);
+            });
+
+            userRepository.findByUsername("client1").orElseGet(() -> {
+                final User u = User.builder()
+                        .username("client1")
+                        .password(passwordEncoder.encode("client123"))
+                        .fullName("Cliente Uno")
+                        .academy(academy)
+                        .build();
+                u.getRoles().add(clientRole);
                 return userRepository.save(u);
             });
 
@@ -88,14 +113,82 @@ public class SeedConfig {
 
             academyModuleRepository.findByAcademyAndModuleCode(academy, ModuleCode.HOURS)
                     .orElseGet(() -> academyModuleRepository.save(AcademyModule.builder().academy(academy).moduleCode(ModuleCode.HOURS).active(true).build()));
+
+            academyModuleRepository.findByAcademyAndModuleCode(academy, ModuleCode.AIRCRAFT)
+                    .orElseGet(() -> academyModuleRepository.save(AcademyModule.builder().academy(academy).moduleCode(ModuleCode.AIRCRAFT).active(true).build()));
+
+            // Seed APPLICATION section entries (best-effort: update names and routes)
+            academyModuleRepository.findByAcademyAndModuleCode(academy, ModuleCode.HOURS)
+                    .ifPresent(m -> { m.setName("Horas"); m.setDescription("Gestión de horas"); m.setRoute("/app/hours"); academyModuleRepository.save(m);} );
+            academyModuleRepository.findByAcademyAndModuleCode(academy, ModuleCode.AIRCRAFT)
+                    .ifPresent(m -> { m.setName("Aeronaves"); m.setDescription("Listado de aeronaves"); m.setRoute("/app/aircraft"); academyModuleRepository.save(m);} );
+
+            // Create sample Hour Purchase and update balance
+            final User client = userRepository.findByUsername("client1").orElseThrow();
+            final User instructor = userRepository.findByUsername("instr1").orElseThrow();
+            final User adminUser = userRepository.findByUsername("admin").orElseThrow();
+            final Aircraft ac = aircraftRepository.findByAcademyAndRegistration(academy, "HK-100").orElseThrow();
+
+            if (!hourPurchaseRepository.existsByReceiptNumberAndAircraft("R-SEED-1", ac)) {
+                final HourPurchase hp = HourPurchase.builder()
+                        .academy(academy)
+                        .client(client)
+                        .aircraft(ac)
+                        .receiptNumber("R-SEED-1")
+                        .hours(5.0)
+                        .purchaseDate(LocalDate.now())
+                        .createdBy(adminUser)
+                        .build();
+                hourPurchaseRepository.save(hp);
+
+                final UserAircraftBalance bal = balanceRepository.findByClientAndAircraft(client, ac)
+                        .orElseGet(() -> UserAircraftBalance.builder()
+                                .client(client)
+                                .aircraft(ac)
+                                .totalPurchased(0)
+                                .totalUsed(0)
+                                .balanceHours(0)
+                                .build());
+                bal.setTotalPurchased(bal.getTotalPurchased() + 5.0);
+                bal.setBalanceHours(bal.getBalanceHours() + 5.0);
+                balanceRepository.save(bal);
+            }
+
+            // Create sample Hour Usage and update balance
+            final boolean existsUsage = hourUsageRepository.count() > 0;
+            if (!existsUsage) {
+                final UserAircraftBalance bal2 = balanceRepository.findByClientAndAircraft(client, ac)
+                        .orElseGet(() -> UserAircraftBalance.builder()
+                                .client(client)
+                                .aircraft(ac)
+                                .totalPurchased(0)
+                                .totalUsed(0)
+                                .balanceHours(0)
+                                .build());
+                double use = Math.min(2.0, bal2.getBalanceHours() + 5.0); // best-effort
+                final HourUsage hu = HourUsage.builder()
+                        .academy(academy)
+                        .client(client)
+                        .aircraft(ac)
+                        .instructor(instructor)
+                        .hours(use)
+                        .flightDate(LocalDate.now())
+                        .logbookNumber("L-SEED-1")
+                        .createdBy(adminUser)
+                        .build();
+                hourUsageRepository.save(hu);
+                bal2.setTotalUsed(bal2.getTotalUsed() + use);
+                bal2.setBalanceHours(bal2.getBalanceHours() - use);
+                balanceRepository.save(bal2);
+            }
         };
     }
 
-    private void ensurePermissions(RolePermissionRepository repo, Role role, Set<PermissionAction> actions) {
+    private void ensurePermissions(RolePermissionRepository repo, Role role, ModuleCode module, Set<PermissionAction> actions) {
         for (PermissionAction action : actions) {
             final RolePermission rp = RolePermission.builder()
                     .role(role)
-                    .moduleCode(ModuleCode.HOURS)
+                    .moduleCode(module)
                     .action(action)
                     .build();
             repo.save(rp);

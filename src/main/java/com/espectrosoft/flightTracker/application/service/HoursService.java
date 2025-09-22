@@ -9,5 +9,5 @@ import com.espectrosoft.flightTracker.application.dto.hours.UserAircraftBalanceD
 public interface HoursService {
     PurchaseHoursResponseDto purchaseHours(PurchaseHoursRequestDto request);
     RegisterUsageResponseDto registerUsage(RegisterUsageRequestDto request);
-    UserAircraftBalanceDto getBalance(Long pilotId, Long aircraftId);
+    UserAircraftBalanceDto getBalance(Long clientId, Long aircraftId);
 }

@@ -8,7 +8,7 @@ import lombok.Setter;
 @Setter
 @AllArgsConstructor
 public class UserAircraftBalanceDto {
-    private Long pilotId;
+    private Long clientId;
     private Long aircraftId;
     private double totalPurchased;
     private double totalUsed;

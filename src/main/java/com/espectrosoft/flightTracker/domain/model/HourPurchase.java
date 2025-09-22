@@ -23,8 +23,8 @@ public class HourPurchase {
     private Academy academy;
 
     @ManyToOne(optional = false)
-    @JoinColumn(name = "pilot_id")
-    private User pilot;
+    @JoinColumn(name = "client_id")
+    private User client;
 
     @ManyToOne(optional = false)
     @JoinColumn(name = "aircraft_id")

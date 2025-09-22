@@ -58,15 +58,15 @@ class RegisterUsageUseCaseImplTest {
     @Test
     void register_ok_updates_balance_and_persists() {
         final Academy academy = Academy.builder().id(1L).name("A").build();
-        final User pilot = User.builder().id(10L).username("p1").academy(academy).fullName("P").password("x").build();
+        final User client = User.builder().id(10L).username("c1").academy(academy).fullName("C").password("x").build();
         final User instructor = User.builder().id(11L).username("i1").academy(academy).fullName("I").password("x").build();
         final Aircraft aircraft = Aircraft.builder().id(100L).academy(academy).registration("HK-1").model("M").type(AircraftType.AIRCRAFT).build();
         final User creator = User.builder().id(2L).username("admin").academy(academy).fullName("Admin").password("p").build();
         final UserAircraftBalance balance = UserAircraftBalance.builder()
-                .pilot(pilot).aircraft(aircraft).totalPurchased(5).totalUsed(1).balanceHours(4).build();
+                .client(client).aircraft(aircraft).totalPurchased(5).totalUsed(1).balanceHours(4).build();
         final RegisterUsageRequestDto req = new RegisterUsageRequestDto();
         req.setAcademyId(1L);
-        req.setPilotId(10L);
+        req.setClientId(10L);
         req.setInstructorId(11L);
         req.setAircraftId(100L);
         req.setHours(2.0);
@@ -74,17 +74,17 @@ class RegisterUsageUseCaseImplTest {
         req.setLogbookNumber("L-1");
 
         when(academyRepository.findById(1L)).thenReturn(Optional.of(academy));
-        when(userRepository.findById(10L)).thenReturn(Optional.of(pilot));
+        when(userRepository.findById(10L)).thenReturn(Optional.of(client));
         when(userRepository.findById(11L)).thenReturn(Optional.of(instructor));
         when(aircraftRepository.findById(100L)).thenReturn(Optional.of(aircraft));
-        when(balanceRepository.findByPilotAndAircraft(pilot, aircraft)).thenReturn(Optional.of(balance));
+        when(balanceRepository.findByClientAndAircraft(client, aircraft)).thenReturn(Optional.of(balance));
         when(userRepository.findByUsername("admin")).thenReturn(Optional.of(creator));
         when(hourUsageRepository.save(any(HourUsage.class))).thenAnswer(inv -> {
             final HourUsage u = inv.getArgument(0, HourUsage.class);
             return HourUsage.builder()
                     .id(7L)
                     .academy(u.getAcademy())
-                    .pilot(u.getPilot())
+                    .client(u.getClient())
                     .aircraft(u.getAircraft())
                     .instructor(u.getInstructor())
                     .hours(u.getHours())
@@ -105,7 +105,7 @@ class RegisterUsageUseCaseImplTest {
         verify(userRepository).findById(10L);
         verify(userRepository).findById(11L);
         verify(aircraftRepository).findById(100L);
-        verify(balanceRepository).findByPilotAndAircraft(pilot, aircraft);
+        verify(balanceRepository).findByClientAndAircraft(client, aircraft);
         verify(userRepository).findByUsername("admin");
         verify(hourUsageRepository).save(any(HourUsage.class));
         verify(balanceRepository).save(any(UserAircraftBalance.class));
@@ -114,14 +114,14 @@ class RegisterUsageUseCaseImplTest {
     @Test
     void insufficient_balance_throws_business() {
         final Academy academy = Academy.builder().id(1L).name("A").build();
-        final User pilot = User.builder().id(10L).username("p1").academy(academy).fullName("P").password("x").build();
+        final User client = User.builder().id(10L).username("c1").academy(academy).fullName("C").password("x").build();
         final User instructor = User.builder().id(11L).username("i1").academy(academy).fullName("I").password("x").build();
         final Aircraft aircraft = Aircraft.builder().id(100L).academy(academy).registration("HK-1").model("M").type(AircraftType.AIRCRAFT).build();
         final UserAircraftBalance balance = UserAircraftBalance.builder()
-                .pilot(pilot).aircraft(aircraft).totalPurchased(1).totalUsed(0).balanceHours(1).build();
+                .client(client).aircraft(aircraft).totalPurchased(1).totalUsed(0).balanceHours(1).build();
         final RegisterUsageRequestDto req = new RegisterUsageRequestDto();
         req.setAcademyId(1L);
-        req.setPilotId(10L);
+        req.setClientId(10L);
         req.setInstructorId(11L);
         req.setAircraftId(100L);
         req.setHours(2.0);
@@ -129,10 +129,10 @@ class RegisterUsageUseCaseImplTest {
         req.setLogbookNumber("L-1");
 
         when(academyRepository.findById(1L)).thenReturn(Optional.of(academy));
-        when(userRepository.findById(10L)).thenReturn(Optional.of(pilot));
+        when(userRepository.findById(10L)).thenReturn(Optional.of(client));
         when(userRepository.findById(11L)).thenReturn(Optional.of(instructor));
         when(aircraftRepository.findById(100L)).thenReturn(Optional.of(aircraft));
-        when(balanceRepository.findByPilotAndAircraft(pilot, aircraft)).thenReturn(Optional.of(balance));
+        when(balanceRepository.findByClientAndAircraft(client, aircraft)).thenReturn(Optional.of(balance));
 
         assertThrows(BusinessException.class, () -> useCase.apply(req));
 
@@ -140,7 +140,7 @@ class RegisterUsageUseCaseImplTest {
         verify(userRepository).findById(10L);
         verify(userRepository).findById(11L);
         verify(aircraftRepository).findById(100L);
-        verify(balanceRepository).findByPilotAndAircraft(pilot, aircraft);
+        verify(balanceRepository).findByClientAndAircraft(client, aircraft);
     }
 
     @Test

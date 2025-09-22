@@ -52,10 +52,10 @@ public class HoursServiceImpl implements HoursService {
     }
 
     @Override
-    public UserAircraftBalanceDto getBalance(Long pilotId, Long aircraftId) {
+    public UserAircraftBalanceDto getBalance(Long clientId, Long aircraftId) {
         final Aircraft aircraft = domainLookup.requireAircraft(aircraftId);
         final User currentUser = domainLookup.requireCurrentUser();
         moduleAccessPolicy.validate(aircraft.getAcademy(), currentUser, ModuleSection.APPLICATION, ModuleCode.HOURS, PermissionAction.VIEW);
-        return getBalanceUseCase.apply(pilotId, aircraftId);
+        return getBalanceUseCase.apply(clientId, aircraftId);
     }
 }

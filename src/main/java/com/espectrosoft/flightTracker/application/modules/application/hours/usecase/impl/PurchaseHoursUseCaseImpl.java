@@ -33,10 +33,10 @@ public class PurchaseHoursUseCaseImpl implements PurchaseHoursUseCase {
         final Academy academy = academyRepository.findById(request.getAcademyId())
                 .orElseThrow(() -> new NotFoundException("Academy not found"));
 
-        final User pilot = userRepository.findById(request.getPilotId())
-                .orElseThrow(() -> new NotFoundException("Pilot not found"));
-        if (!Objects.equals(pilot.getAcademy().getId(), academy.getId())) {
-            throw new BusinessException("Pilot not in academy");
+        final User client = userRepository.findById(request.getClientId())
+                .orElseThrow(() -> new NotFoundException("Client not found"));
+        if (!Objects.equals(client.getAcademy().getId(), academy.getId())) {
+            throw new BusinessException("Client not in academy");
         }
 
         final Aircraft aircraft = aircraftRepository.findById(request.getAircraftId())
@@ -63,7 +63,7 @@ public class PurchaseHoursUseCaseImpl implements PurchaseHoursUseCase {
 
         final HourPurchase purchase = HourPurchase.builder()
                 .academy(academy)
-                .pilot(pilot)
+                .client(client)
                 .aircraft(aircraft)
                 .receiptNumber(request.getReceiptNumber())
                 .hours(request.getHours())
@@ -72,9 +72,9 @@ public class PurchaseHoursUseCaseImpl implements PurchaseHoursUseCase {
                 .build();
         final HourPurchase saved = hourPurchaseRepository.save(purchase);
 
-        final UserAircraftBalance balance = balanceRepository.findByPilotAndAircraft(pilot, aircraft)
+        final UserAircraftBalance balance = balanceRepository.findByClientAndAircraft(client, aircraft)
                 .orElseGet(() -> UserAircraftBalance.builder()
-                        .pilot(pilot)
+                        .client(client)
                         .aircraft(aircraft)
                         .totalPurchased(0)
                         .totalUsed(0)

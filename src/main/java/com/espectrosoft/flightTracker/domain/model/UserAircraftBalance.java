@@ -5,7 +5,7 @@ import lombok.*;
 
 @Entity
 @Table(name = "user_aircraft_balances",
-        uniqueConstraints = @UniqueConstraint(columnNames = {"pilot_id", "aircraft_id"}))
+        uniqueConstraints = @UniqueConstraint(columnNames = {"client_id", "aircraft_id"}))
 @Getter
 @Setter
 @NoArgsConstructor
@@ -17,8 +17,8 @@ public class UserAircraftBalance {
     private Long id;
 
     @ManyToOne(optional = false)
-    @JoinColumn(name = "pilot_id")
-    private User pilot;
+    @JoinColumn(name = "client_id")
+    private User client;
 
     @ManyToOne(optional = false)
     @JoinColumn(name = "aircraft_id")

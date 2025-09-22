@@ -47,19 +47,19 @@ class GetBalanceUseCaseImplTest {
     @Test
     void returns_existing_balance() {
         final Academy academy = Academy.builder().id(1L).name("A").build();
-        final User pilot = User.builder().id(10L).username("p1").academy(academy).fullName("P").password("x").build();
+        final User client = User.builder().id(10L).username("c1").academy(academy).fullName("C").password("x").build();
         final Aircraft aircraft = Aircraft.builder().id(100L).academy(academy).registration("HK-1").model("M").type(AircraftType.AIRCRAFT).build();
         final UserAircraftBalance balance = UserAircraftBalance.builder()
-                .pilot(pilot).aircraft(aircraft).totalPurchased(5).totalUsed(2).balanceHours(3).build();
+                .client(client).aircraft(aircraft).totalPurchased(5).totalUsed(2).balanceHours(3).build();
 
-        when(userRepository.findById(10L)).thenReturn(Optional.of(pilot));
+        when(userRepository.findById(10L)).thenReturn(Optional.of(client));
         when(aircraftRepository.findById(100L)).thenReturn(Optional.of(aircraft));
-        when(balanceRepository.findByPilotAndAircraft(pilot, aircraft)).thenReturn(Optional.of(balance));
+        when(balanceRepository.findByClientAndAircraft(client, aircraft)).thenReturn(Optional.of(balance));
 
         final UserAircraftBalanceDto dto = useCase.apply(10L, 100L);
 
         assertNotNull(dto);
-        assertEquals(10L, dto.getPilotId());
+        assertEquals(10L, dto.getClientId());
         assertEquals(100L, dto.getAircraftId());
         assertEquals(5.0, dto.getTotalPurchased());
         assertEquals(2.0, dto.getTotalUsed());
@@ -67,7 +67,7 @@ class GetBalanceUseCaseImplTest {
 
         verify(userRepository).findById(10L);
         verify(aircraftRepository).findById(100L);
-        verify(balanceRepository).findByPilotAndAircraft(pilot, aircraft);
+        verify(balanceRepository).findByClientAndAircraft(client, aircraft);
     }
 
     @Test

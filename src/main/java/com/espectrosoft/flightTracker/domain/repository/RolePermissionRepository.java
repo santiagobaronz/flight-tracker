@@ -19,4 +19,6 @@ public interface RolePermissionRepository extends JpaRepository<RolePermission, 
     boolean existsByUserIdAndModuleCodeAndAction(@Param("userId") Long userId,
                                                  @Param("moduleCode") ModuleCode moduleCode,
                                                  @Param("action") PermissionAction action);
+
+    boolean existsByRoleAndModuleCodeAndAction(Role role, ModuleCode moduleCode, PermissionAction action);
 }

@@ -23,13 +23,13 @@ public class GetBalanceUseCaseImpl implements GetBalanceUseCase {
     UserAircraftBalanceRepository balanceRepository;
 
     @Override
-    public UserAircraftBalanceDto apply(Long pilotId, Long aircraftId) {
-        final User pilot = userRepository.findById(pilotId)
-                .orElseThrow(() -> new NotFoundException("Pilot not found"));
+    public UserAircraftBalanceDto apply(Long clientId, Long aircraftId) {
+        final User client = userRepository.findById(clientId)
+                .orElseThrow(() -> new NotFoundException("Client not found"));
         final Aircraft aircraft = aircraftRepository.findById(aircraftId)
                 .orElseThrow(() -> new NotFoundException("Aircraft not found"));
-        return balanceRepository.findByPilotAndAircraft(pilot, aircraft)
-                .map(b -> new UserAircraftBalanceDto(pilot.getId(), aircraft.getId(), b.getTotalPurchased(), b.getTotalUsed(), b.getBalanceHours()))
-                .orElseGet(() -> new UserAircraftBalanceDto(pilot.getId(), aircraft.getId(), 0, 0, 0));
+        return balanceRepository.findByClientAndAircraft(client, aircraft)
+                .map(b -> new UserAircraftBalanceDto(client.getId(), aircraft.getId(), b.getTotalPurchased(), b.getTotalUsed(), b.getBalanceHours()))
+                .orElseGet(() -> new UserAircraftBalanceDto(client.getId(), aircraft.getId(), 0, 0, 0));
     }
 }

@@ -8,5 +8,5 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.Optional;
 
 public interface UserAircraftBalanceRepository extends JpaRepository<UserAircraftBalance, Long> {
-    Optional<UserAircraftBalance> findByPilotAndAircraft(User pilot, Aircraft aircraft);
+    Optional<UserAircraftBalance> findByClientAndAircraft(User client, Aircraft aircraft);
 }

@@ -31,10 +31,10 @@ public class RegisterUsageUseCaseImpl implements RegisterUsageUseCase {
         final Academy academy = academyRepository.findById(request.getAcademyId())
                 .orElseThrow(() -> new NotFoundException("Academy not found"));
 
-        final User pilot = userRepository.findById(request.getPilotId())
-                .orElseThrow(() -> new NotFoundException("Pilot not found"));
-        if (!Objects.equals(pilot.getAcademy().getId(), academy.getId())) {
-            throw new BusinessException("Pilot not in academy");
+        final User client = userRepository.findById(request.getClientId())
+                .orElseThrow(() -> new NotFoundException("Client not found"));
+        if (!Objects.equals(client.getAcademy().getId(), academy.getId())) {
+            throw new BusinessException("Client not in academy");
         }
 
         final User instructor = userRepository.findById(request.getInstructorId())
@@ -49,8 +49,8 @@ public class RegisterUsageUseCaseImpl implements RegisterUsageUseCase {
             throw new BusinessException("Aircraft not in academy");
         }
 
-        final UserAircraftBalance balance = balanceRepository.findByPilotAndAircraft(pilot, aircraft)
-                .orElseThrow(() -> new BusinessException("No balance for pilot and aircraft"));
+        final UserAircraftBalance balance = balanceRepository.findByClientAndAircraft(client, aircraft)
+                .orElseThrow(() -> new BusinessException("No balance for client and aircraft"));
         if (request.getHours() > balance.getBalanceHours()) {
             throw new BusinessException("Insufficient hours balance");
         }
@@ -61,7 +61,7 @@ public class RegisterUsageUseCaseImpl implements RegisterUsageUseCase {
 
         final HourUsage usage = HourUsage.builder()
                 .academy(academy)
-                .pilot(pilot)
+                .client(client)
                 .aircraft(aircraft)
                 .instructor(instructor)
                 .hours(request.getHours())

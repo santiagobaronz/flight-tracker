@@ -36,7 +36,7 @@ public class HoursController {
 
     @GetMapping("/balance")
     @PreAuthorize("isAuthenticated()")
-    public ResponseEntity<UserAircraftBalanceDto> getBalance(@RequestParam Long pilotId, @RequestParam Long aircraftId) {
-        return ResponseEntity.ok(hoursService.getBalance(pilotId, aircraftId));
+    public ResponseEntity<UserAircraftBalanceDto> getBalance(@RequestParam Long clientId, @RequestParam Long aircraftId) {
+        return ResponseEntity.ok(hoursService.getBalance(clientId, aircraftId));
     }
 }

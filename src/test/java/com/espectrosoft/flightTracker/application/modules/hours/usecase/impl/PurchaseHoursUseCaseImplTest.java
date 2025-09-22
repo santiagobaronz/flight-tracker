@@ -59,19 +59,19 @@ class PurchaseHoursUseCaseImplTest {
     @Test
     void purchase_ok_updates_balance_and_persists() {
         final Academy academy = Academy.builder().id(1L).name("A").build();
-        final User pilot = User.builder().id(10L).username("p1").academy(academy).fullName("P").password("x").build();
+        final User client = User.builder().id(10L).username("c1").academy(academy).fullName("C").password("x").build();
         final Aircraft aircraft = Aircraft.builder().id(100L).academy(academy).registration("HK-1").model("M").type(AircraftType.AIRCRAFT).build();
         final User creator = User.builder().id(2L).username("admin").academy(academy).fullName("Admin").password("p").build();
         final PurchaseHoursRequestDto req = new PurchaseHoursRequestDto();
         req.setAcademyId(1L);
-        req.setPilotId(10L);
+        req.setClientId(10L);
         req.setAircraftId(100L);
         req.setReceiptNumber("R-1");
         req.setHours(2.0);
         req.setPurchaseDate(LocalDate.now());
 
         when(academyRepository.findById(1L)).thenReturn(Optional.of(academy));
-        when(userRepository.findById(10L)).thenReturn(Optional.of(pilot));
+        when(userRepository.findById(10L)).thenReturn(Optional.of(client));
         when(aircraftRepository.findById(100L)).thenReturn(Optional.of(aircraft));
         when(hourPurchaseRepository.existsByReceiptNumberAndAircraft("R-1", aircraft)).thenReturn(false);
         when(hourPurchaseRepository.findByAcademyAndReceiptNumber(academy, "R-1")).thenReturn(List.of());
@@ -81,7 +81,7 @@ class PurchaseHoursUseCaseImplTest {
             return HourPurchase.builder()
                     .id(1L)
                     .academy(p.getAcademy())
-                    .pilot(p.getPilot())
+                    .client(p.getClient())
                     .aircraft(p.getAircraft())
                     .receiptNumber(p.getReceiptNumber())
                     .hours(p.getHours())
@@ -89,7 +89,7 @@ class PurchaseHoursUseCaseImplTest {
                     .createdBy(p.getCreatedBy())
                     .build();
         });
-        when(balanceRepository.findByPilotAndAircraft(pilot, aircraft)).thenReturn(Optional.empty());
+        when(balanceRepository.findByClientAndAircraft(client, aircraft)).thenReturn(Optional.empty());
         when(balanceRepository.save(any(UserAircraftBalance.class))).thenAnswer(inv -> inv.getArgument(0, UserAircraftBalance.class));
 
         final PurchaseHoursResponseDto dto = useCase.apply(req);
@@ -105,25 +105,25 @@ class PurchaseHoursUseCaseImplTest {
         verify(hourPurchaseRepository).findByAcademyAndReceiptNumber(academy, "R-1");
         verify(userRepository).findByUsername("admin");
         verify(hourPurchaseRepository).save(any(HourPurchase.class));
-        verify(balanceRepository).findByPilotAndAircraft(pilot, aircraft);
+        verify(balanceRepository).findByClientAndAircraft(client, aircraft);
         verify(balanceRepository).save(any(UserAircraftBalance.class));
     }
 
     @Test
     void duplicate_receipt_for_aircraft_throws_business() {
         final Academy academy = Academy.builder().id(1L).name("A").build();
-        final User pilot = User.builder().id(10L).username("p1").academy(academy).fullName("P").password("x").build();
+        final User client = User.builder().id(10L).username("c1").academy(academy).fullName("C").password("x").build();
         final Aircraft aircraft = Aircraft.builder().id(100L).academy(academy).registration("HK-1").model("M").type(AircraftType.AIRCRAFT).build();
         final PurchaseHoursRequestDto req = new PurchaseHoursRequestDto();
         req.setAcademyId(1L);
-        req.setPilotId(10L);
+        req.setClientId(10L);
         req.setAircraftId(100L);
         req.setReceiptNumber("R-1");
         req.setHours(2.0);
         req.setPurchaseDate(LocalDate.now());
 
         when(academyRepository.findById(1L)).thenReturn(Optional.of(academy));
-        when(userRepository.findById(10L)).thenReturn(Optional.of(pilot));
+        when(userRepository.findById(10L)).thenReturn(Optional.of(client));
         when(aircraftRepository.findById(100L)).thenReturn(Optional.of(aircraft));
         when(hourPurchaseRepository.existsByReceiptNumberAndAircraft("R-1", aircraft)).thenReturn(true);
 
@@ -138,20 +138,20 @@ class PurchaseHoursUseCaseImplTest {
     @Test
     void receipt_type_inconsistency_throws_business() {
         final Academy academy = Academy.builder().id(1L).name("A").build();
-        final User pilot = User.builder().id(10L).username("p1").academy(academy).fullName("P").password("x").build();
+        final User client = User.builder().id(10L).username("c1").academy(academy).fullName("C").password("x").build();
         final Aircraft aircraft = Aircraft.builder().id(100L).academy(academy).registration("HK-1").model("M").type(AircraftType.SIMULATOR).build();
         final Aircraft prevAircraft = Aircraft.builder().id(200L).academy(academy).registration("HK-2").model("M").type(AircraftType.AIRCRAFT).build();
-        final HourPurchase prev = HourPurchase.builder().id(9L).academy(academy).pilot(pilot).aircraft(prevAircraft).receiptNumber("R-1").hours(1).build();
+        final HourPurchase prev = HourPurchase.builder().id(9L).academy(academy).client(client).aircraft(prevAircraft).receiptNumber("R-1").hours(1).build();
         final PurchaseHoursRequestDto req = new PurchaseHoursRequestDto();
         req.setAcademyId(1L);
-        req.setPilotId(10L);
+        req.setClientId(10L);
         req.setAircraftId(100L);
         req.setReceiptNumber("R-1");
         req.setHours(2.0);
         req.setPurchaseDate(LocalDate.now());
 
         when(academyRepository.findById(1L)).thenReturn(Optional.of(academy));
-        when(userRepository.findById(10L)).thenReturn(Optional.of(pilot));
+        when(userRepository.findById(10L)).thenReturn(Optional.of(client));
         when(aircraftRepository.findById(100L)).thenReturn(Optional.of(aircraft));
         when(hourPurchaseRepository.existsByReceiptNumberAndAircraft("R-1", aircraft)).thenReturn(false);
         when(hourPurchaseRepository.findByAcademyAndReceiptNumber(academy, "R-1")).thenReturn(List.of(prev));
