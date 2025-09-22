@@ -2,6 +2,7 @@ package com.espectrosoft.flightTracker.domain.model;
 
 import jakarta.persistence.*;
 import lombok.*;
+import com.espectrosoft.flightTracker.domain.model.enums.RoleType;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -23,6 +24,11 @@ public class Role {
 
     @Column(length = 200)
     private String description;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "role_type", nullable = false, length = 20)
+    @Builder.Default
+    private RoleType roleType = RoleType.OPTIONAL;
 
     @ManyToMany(mappedBy = "roles")
     @Builder.Default

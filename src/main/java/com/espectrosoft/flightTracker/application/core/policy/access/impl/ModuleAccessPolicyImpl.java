@@ -6,6 +6,7 @@ import com.espectrosoft.flightTracker.application.core.policy.access.ModuleAcces
 import com.espectrosoft.flightTracker.application.core.policy.validations.AcademyActivePolicy;
 import com.espectrosoft.flightTracker.application.core.policy.validations.ModuleEnabledPolicy;
 import com.espectrosoft.flightTracker.application.core.policy.validations.UserActivePolicy;
+import com.espectrosoft.flightTracker.application.core.principal.PrincipalService;
 import com.espectrosoft.flightTracker.application.exception.types.BusinessException;
 import com.espectrosoft.flightTracker.domain.model.Academy;
 import com.espectrosoft.flightTracker.domain.model.User;
@@ -27,12 +28,16 @@ public class ModuleAccessPolicyImpl implements ModuleAccessPolicy {
     UserActivePolicy userActivePolicy;
     ModuleEnabledPolicy moduleEnabledPolicy;
     RolePermissionRepository rolePermissionRepository;
+    PrincipalService principalService;
 
     @Override
     public void validate(Academy academy, User user, ModuleSection section, ModuleCode moduleCode, PermissionAction action) {
         academyActivePolicy.apply(academy);
         userActivePolicy.apply(user);
         moduleEnabledPolicy.apply(academy, section, moduleCode);
+        if (principalService.isPrincipal(user)) {
+            return;
+        }
         final boolean hasPermission = rolePermissionRepository.existsByUserIdAndModuleCodeAndAction(user.getId(), moduleCode, action);
         if (!hasPermission) {
             throw new BusinessException(INSUFFICIENT_PERMISSIONS);

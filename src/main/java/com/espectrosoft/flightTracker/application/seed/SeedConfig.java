@@ -29,6 +29,7 @@ public class SeedConfig {
             HourPurchaseRepository hourPurchaseRepository,
             HourUsageRepository hourUsageRepository,
             UserAircraftBalanceRepository balanceRepository,
+            SystemPrincipalRepository systemPrincipalRepository,
             PasswordEncoder passwordEncoder
     ) {
         return args -> {
@@ -70,6 +71,10 @@ public class SeedConfig {
                 u.getRoles().add(adminRole);
                 return userRepository.save(u);
             });
+
+            systemPrincipalRepository.findById(1L).orElseGet(() ->
+                    systemPrincipalRepository.save(SystemPrincipal.builder().id(1L).user(admin).build())
+            );
 
             userRepository.findByUsername("instr1").orElseGet(() -> {
                 final User u = User.builder()
@@ -186,12 +191,14 @@ public class SeedConfig {
 
     private void ensurePermissions(RolePermissionRepository repo, Role role, ModuleCode module, Set<PermissionAction> actions) {
         for (PermissionAction action : actions) {
-            final RolePermission rp = RolePermission.builder()
-                    .role(role)
-                    .moduleCode(module)
-                    .action(action)
-                    .build();
-            repo.save(rp);
+            if (!repo.existsByRoleAndModuleCodeAndAction(role, module, action)) {
+                final RolePermission rp = RolePermission.builder()
+                        .role(role)
+                        .moduleCode(module)
+                        .action(action)
+                        .build();
+                repo.save(rp);
+            }
         }
     }
 }
