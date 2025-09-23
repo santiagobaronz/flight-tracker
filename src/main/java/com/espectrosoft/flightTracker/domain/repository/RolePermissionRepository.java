@@ -9,6 +9,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.util.Set;
+import java.util.List;
 
 public interface RolePermissionRepository extends JpaRepository<RolePermission, Long> {
     boolean existsByRoleInAndModuleCodeAndAction(Set<Role> roles, ModuleCode moduleCode, PermissionAction action);
@@ -21,4 +22,8 @@ public interface RolePermissionRepository extends JpaRepository<RolePermission, 
                                                  @Param("action") PermissionAction action);
 
     boolean existsByRoleAndModuleCodeAndAction(Role role, ModuleCode moduleCode, PermissionAction action);
+
+    List<RolePermission> findByRole(Role role);
+
+    void deleteByRole(Role role);
 }

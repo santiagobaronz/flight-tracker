@@ -23,7 +23,7 @@ public class ModuleEnabledPolicyImpl implements ModuleEnabledPolicy {
 
     @Override
     public void apply(Academy academy, ModuleSection section, ModuleCode module) {
-        academyModuleRepository.findByAcademyAndModuleCode(academy, module)
+        academyModuleRepository.findByAcademyAndSectionAndModuleCode(academy, section, module)
                 .filter(AcademyModule::isActive)
                 .orElseThrow(() -> new ModuleDisabledException(MODULE_DISABLED));
     }

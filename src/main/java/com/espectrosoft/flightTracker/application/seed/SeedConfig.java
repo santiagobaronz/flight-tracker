@@ -4,6 +4,7 @@ import com.espectrosoft.flightTracker.domain.model.*;
 import com.espectrosoft.flightTracker.domain.model.enums.ModuleCode;
 import com.espectrosoft.flightTracker.domain.model.enums.PermissionAction;
 import com.espectrosoft.flightTracker.domain.model.enums.AircraftType;
+import com.espectrosoft.flightTracker.domain.model.enums.ModuleSection;
 import com.espectrosoft.flightTracker.domain.repository.*;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -122,11 +123,35 @@ public class SeedConfig {
             academyModuleRepository.findByAcademyAndModuleCode(academy, ModuleCode.AIRCRAFT)
                     .orElseGet(() -> academyModuleRepository.save(AcademyModule.builder().academy(academy).moduleCode(ModuleCode.AIRCRAFT).active(true).build()));
 
+            academyModuleRepository.findByAcademyAndSectionAndModuleCode(academy, ModuleSection.MANAGEMENT, ModuleCode.ROLES)
+                    .orElseGet(() -> academyModuleRepository.save(AcademyModule.builder()
+                            .academy(academy)
+                            .section(ModuleSection.MANAGEMENT)
+                            .moduleCode(ModuleCode.ROLES)
+                            .active(true)
+                            .name("Roles")
+                            .description("Gestión de roles")
+                            .route("/mgmt/roles")
+                            .build()));
+
             // Seed APPLICATION section entries (best-effort: update names and routes)
             academyModuleRepository.findByAcademyAndModuleCode(academy, ModuleCode.HOURS)
                     .ifPresent(m -> { m.setName("Horas"); m.setDescription("Gestión de horas"); m.setRoute("/app/hours"); academyModuleRepository.save(m);} );
             academyModuleRepository.findByAcademyAndModuleCode(academy, ModuleCode.AIRCRAFT)
                     .ifPresent(m -> { m.setName("Aeronaves"); m.setDescription("Listado de aeronaves"); m.setRoute("/app/aircraft"); academyModuleRepository.save(m);} );
+
+            // Seed ROLES permissions per role
+            ensurePermissions(rolePermissionRepository, adminRole, ModuleCode.ROLES, EnumSet.of(PermissionAction.VIEW, PermissionAction.CREATE, PermissionAction.EDIT, PermissionAction.DELETE));
+            ensurePermissions(rolePermissionRepository, employeeRole, ModuleCode.ROLES, EnumSet.of(PermissionAction.VIEW));
+
+            // Seed MECANICO role (OPTIONAL) mirroring INSTRUCTOR permissions
+            final Role mecanicoRole = roleRepository.findByName("MECANICO").orElseGet(() -> roleRepository.save(Role.builder().name("MECANICO").description("Mecánicos").build()));
+            // Copy instructor permissions
+            for (RolePermission rp : rolePermissionRepository.findByRole(instrRole)) {
+                if (!rolePermissionRepository.existsByRoleAndModuleCodeAndAction(mecanicoRole, rp.getModuleCode(), rp.getAction())) {
+                    rolePermissionRepository.save(RolePermission.builder().role(mecanicoRole).moduleCode(rp.getModuleCode()).action(rp.getAction()).build());
+                }
+            }
 
             // Create sample Hour Purchase and update balance
             final User client = userRepository.findByUsername("client1").orElseThrow();

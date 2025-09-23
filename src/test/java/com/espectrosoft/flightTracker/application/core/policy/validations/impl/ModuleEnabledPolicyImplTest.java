@@ -38,28 +38,28 @@ class ModuleEnabledPolicyImplTest {
     void apply_active_module_ok() {
         final Academy academy = Academy.builder().id(1L).name("A").build();
         final AcademyModule am = AcademyModule.builder().academy(academy).moduleCode(ModuleCode.HOURS).active(true).build();
-        when(academyModuleRepository.findByAcademyAndModuleCode(eq(academy), eq(ModuleCode.HOURS))).thenReturn(Optional.of(am));
+        when(academyModuleRepository.findByAcademyAndSectionAndModuleCode(eq(academy), eq(ModuleSection.APPLICATION), eq(ModuleCode.HOURS))).thenReturn(Optional.of(am));
 
         assertDoesNotThrow(() -> policy.apply(academy, ModuleSection.APPLICATION, ModuleCode.HOURS));
-        verify(academyModuleRepository).findByAcademyAndModuleCode(eq(academy), eq(ModuleCode.HOURS));
+        verify(academyModuleRepository).findByAcademyAndSectionAndModuleCode(eq(academy), eq(ModuleSection.APPLICATION), eq(ModuleCode.HOURS));
     }
 
     @Test
     void apply_absent_module_throws() {
         final Academy academy = Academy.builder().id(1L).name("A").build();
-        when(academyModuleRepository.findByAcademyAndModuleCode(eq(academy), eq(ModuleCode.HOURS))).thenReturn(Optional.empty());
+        when(academyModuleRepository.findByAcademyAndSectionAndModuleCode(eq(academy), eq(ModuleSection.APPLICATION), eq(ModuleCode.HOURS))).thenReturn(Optional.empty());
 
         assertThrows(ModuleDisabledException.class, () -> policy.apply(academy, ModuleSection.APPLICATION, ModuleCode.HOURS));
-        verify(academyModuleRepository).findByAcademyAndModuleCode(eq(academy), eq(ModuleCode.HOURS));
+        verify(academyModuleRepository).findByAcademyAndSectionAndModuleCode(eq(academy), eq(ModuleSection.APPLICATION), eq(ModuleCode.HOURS));
     }
 
     @Test
     void apply_inactive_module_throws() {
         final Academy academy = Academy.builder().id(1L).name("A").build();
         final AcademyModule am = AcademyModule.builder().academy(academy).moduleCode(ModuleCode.HOURS).active(false).build();
-        when(academyModuleRepository.findByAcademyAndModuleCode(eq(academy), eq(ModuleCode.HOURS))).thenReturn(Optional.of(am));
+        when(academyModuleRepository.findByAcademyAndSectionAndModuleCode(eq(academy), eq(ModuleSection.APPLICATION), eq(ModuleCode.HOURS))).thenReturn(Optional.of(am));
 
         assertThrows(ModuleDisabledException.class, () -> policy.apply(academy, ModuleSection.APPLICATION, ModuleCode.HOURS));
-        verify(academyModuleRepository).findByAcademyAndModuleCode(eq(academy), eq(ModuleCode.HOURS));
+        verify(academyModuleRepository).findByAcademyAndSectionAndModuleCode(eq(academy), eq(ModuleSection.APPLICATION), eq(ModuleCode.HOURS));
     }
 }

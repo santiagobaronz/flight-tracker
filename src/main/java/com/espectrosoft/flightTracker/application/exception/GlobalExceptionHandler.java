@@ -5,6 +5,7 @@ import com.espectrosoft.flightTracker.application.exception.types.BusinessExcept
 import com.espectrosoft.flightTracker.application.exception.types.ModuleDisabledException;
 import com.espectrosoft.flightTracker.application.exception.types.NotFoundException;
 import com.espectrosoft.flightTracker.application.exception.types.UserInactiveException;
+import com.espectrosoft.flightTracker.application.exception.types.ConflictException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
@@ -59,6 +60,15 @@ public class GlobalExceptionHandler {
         body.put(STATUS, HttpStatus.UNPROCESSABLE_ENTITY.value());
         body.put(MESSAGE, ex.getMessage());
         return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY).body(body);
+    }
+
+    @ExceptionHandler(ConflictException.class)
+    public ResponseEntity<Map<String, Object>> handleConflict(ConflictException ex) {
+        log.warn("Conflict: {}", ex.getMessage());
+        Map<String, Object> body = new HashMap<>();
+        body.put(STATUS, HttpStatus.CONFLICT.value());
+        body.put(MESSAGE, ex.getMessage());
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(body);
     }
 
     @ExceptionHandler({BadCredentialsException.class, UsernameNotFoundException.class})
